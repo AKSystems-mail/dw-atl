@@ -62,7 +62,7 @@ export const locations: Location[] = [
   {
     id: "westend",
     name: "West End",
-    description: "Historic neighborhood southwest of downtown",
+    description: "Thriller without the music and dancing",
     prices: {},
   },
 ];
