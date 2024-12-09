@@ -32,31 +32,31 @@ export const locations: Location[] = [
   {
     id: "midtown",
     name: "Midtown",
-    description: "The heart of the city",
+    description: "Fox Theater and that rainbow crosswalk",
     prices: {},
   },
   {
     id: "buckhead",
     name: "Buckhead",
-    description: "Upscale district",
+    description: "Old money and highrises",
     prices: {},
   },
   {
     id: "cobbcounty",
     name: "Cobb County",
-    description: "Suburban area northwest of Atlanta",
+    description: "Technically ITP, don't stay here long",
     prices: {},
   },
   {
     id: "littlefive",
     name: "Little Five Points",
-    description: "Alternative culture hub",
+    description: "Hipsters everywhere",
     prices: {},
   },
   {
     id: "decatur",
     name: "Decatur",
-    description: "Historic district east of Atlanta",
+    description: "It's the souf side obviously",
     prices: {},
   },
   {
