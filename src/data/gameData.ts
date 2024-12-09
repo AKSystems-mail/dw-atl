@@ -42,15 +42,27 @@ export const locations: Location[] = [
     prices: {},
   },
   {
-    id: "downtown",
-    name: "Downtown",
-    description: "Business district",
+    id: "cobbcounty",
+    name: "Cobb County",
+    description: "Suburban area northwest of Atlanta",
     prices: {},
   },
   {
     id: "littlefive",
     name: "Little Five Points",
     description: "Alternative culture hub",
+    prices: {},
+  },
+  {
+    id: "decatur",
+    name: "Decatur",
+    description: "Historic district east of Atlanta",
+    prices: {},
+  },
+  {
+    id: "westend",
+    name: "West End",
+    description: "Historic neighborhood southwest of downtown",
     prices: {},
   },
 ];
