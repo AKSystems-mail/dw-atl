@@ -136,15 +136,23 @@ export const weapons: Weapon[] = [
 ];
 
 export const generatePrices = () => {
-  return locations.map(location => ({
-    ...location,
-    prices: Object.fromEntries(
-      items.map(item => [
+  return locations.map(location => {
+    // Randomly select 3-4 items for this location
+    const availableItems = [...items]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3 + Math.floor(Math.random() * 2));
+
+    // Create prices object with only available items
+    const prices = Object.fromEntries(
+      availableItems.map(item => [
         item.id,
-        Math.floor(
-          item.basePrice * (0.5 + Math.random())
-        ),
+        Math.floor(item.basePrice * (0.5 + Math.random())),
       ])
-    ),
-  }));
+    );
+
+    return {
+      ...location,
+      prices,
+    };
+  });
 };

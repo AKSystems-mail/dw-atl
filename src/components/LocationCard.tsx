@@ -115,6 +115,15 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
       return;
     }
 
+    const travelCost = option.getPrice(currentLocation, location.id);
+    if (gameState.money < travelCost) {
+      toast({
+        title: "Not Enough Money",
+        description: `You need $${travelCost} to travel using ${option.name}.`
+      });
+      return;
+    }
+
     const roll = Math.random();
     if (roll < option.risk.chance) {
       setSelectedOption(option);
@@ -125,9 +134,17 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
   };
 
   const completeTravelWithoutIncident = (option: TravelOption) => {
+    const travelCost = option.getPrice(currentLocation, location.id);
+    
     if (option.id === "ryde") {
       setRydeCooldown(60);
     }
+    
+    setGameState(prev => ({
+      ...prev,
+      money: prev.money - travelCost
+    }));
+    
     onTravel(location.id, option.id);
     setShowTravelOptions(false);
   };
