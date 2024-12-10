@@ -1,4 +1,4 @@
-import { Item, Location, BookBag } from "../types/game";
+import { Item, Location, BookBag, Weapon } from "../types/game";
 
 export const INITIAL_MONEY = 2000;
 export const INITIAL_DEBT = 5500;
@@ -106,6 +106,33 @@ export const locations: Location[] = [
     description: "Thriller without the music and dancing",
     prices: {},
   },
+];
+
+export const weapons: Weapon[] = [
+  {
+    id: "fists",
+    name: "Fists",
+    price: 0,
+    winChance: 0.45
+  },
+  {
+    id: "blicky",
+    name: "Blicky",
+    price: 300,
+    winChance: 0.52
+  },
+  {
+    id: "strap",
+    name: "Strap",
+    price: 550,
+    winChance: 0.63
+  },
+  {
+    id: "draco",
+    name: "Draco",
+    price: 3000,
+    winChance: 0.77
+  }
 ];
 
 export const generatePrices = () => {

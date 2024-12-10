@@ -20,6 +20,13 @@ export interface Location {
   prices: Record<string, number>;
 }
 
+export interface Weapon {
+  id: string;
+  name: string;
+  price: number;
+  winChance: number;
+}
+
 export interface GameState {
   money: number;
   debt: number;
@@ -30,6 +37,12 @@ export interface GameState {
   bookBag: {
     capacity: number;
     currentSize: number;
+  };
+  weapon: {
+    id: string;
+    name: string;
+    winChance: number;
+    cooldown: number;
   };
 }
 

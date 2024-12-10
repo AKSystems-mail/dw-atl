@@ -9,11 +9,14 @@ import {
 } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
+import { GameState } from "../types/game";
 
 interface LocationCardProps {
   location: Location;
   currentLocation: string;
   onTravel: (locationId: string, travelMethod: string) => void;
+  gameState: GameState;
+  setGameState: (state: GameState) => void;
 }
 
 interface TravelOption {
@@ -87,7 +90,7 @@ const travelOptions: TravelOption[] = [
   },
 ];
 
-export const LocationCard = ({ location, currentLocation, onTravel }: LocationCardProps) => {
+export const LocationCard = ({ location, currentLocation, onTravel, gameState, setGameState }: LocationCardProps) => {
   const [showTravelOptions, setShowTravelOptions] = useState(false);
   const [showRiskDialog, setShowRiskDialog] = useState(false);
   const [selectedOption, setSelectedOption] = useState<TravelOption | null>(null);
@@ -135,12 +138,31 @@ export const LocationCard = ({ location, currentLocation, onTravel }: LocationCa
     const escape = selectedOption.risk.escape?.[escapeMethod as keyof typeof selectedOption.risk.escape];
     if (!escape) return;
 
+    if (escapeMethod === 'fight' && gameState.weapon.cooldown > 0) {
+      toast({
+        title: "Weapon Cooldown",
+        description: `Your ${gameState.weapon.name} needs ${gameState.weapon.cooldown} minutes to cooldown.`
+      });
+      return;
+    }
+
     const roll = Math.random();
-    if (roll < escape.chance) {
+    const winChance = escapeMethod === 'fight' ? gameState.weapon.winChance : escape.chance;
+
+    if (roll < winChance) {
       toast({
         title: "Escaped!",
         description: `You got away but lost some items and cash.`
       });
+      if (escapeMethod === 'fight') {
+        setGameState(prev => ({
+          ...prev,
+          weapon: {
+            ...prev.weapon,
+            cooldown: 7
+          }
+        }));
+      }
       onTravel(location.id, selectedOption.id);
     } else {
       if (selectedOption.id === "drive") {
@@ -229,8 +251,13 @@ export const LocationCard = ({ location, currentLocation, onTravel }: LocationCa
               </Button>
             )}
             {selectedOption?.risk.escape?.fight && (
-              <Button onClick={() => handleEscapeAttempt('fight')} variant="outline">
-                Fight (8% escape chance)
+              <Button 
+                onClick={() => handleEscapeAttempt('fight')} 
+                variant="outline"
+                disabled={gameState.weapon.cooldown > 0}
+              >
+                Fight with {gameState.weapon.name} ({(gameState.weapon.winChance * 100).toFixed(0)}% escape chance)
+                {gameState.weapon.cooldown > 0 && ` (${gameState.weapon.cooldown}m cooldown)`}
               </Button>
             )}
             {selectedOption?.risk.escape?.bribe && (

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { StatsBar } from "../components/StatsBar";
 import { LocationCard } from "../components/LocationCard";
 import { Inventory } from "../components/Inventory";
-import { GameState, Location, PriceState } from "../types/game";
+import { WeaponsShop } from "../components/WeaponsShop";
+import { GameState, Location, PriceState, Weapon } from "../types/game";
 import { INITIAL_MONEY, INITIAL_DEBT, items, generatePrices } from "../data/gameData";
 import { toast } from "@/components/ui/use-toast";
 
@@ -17,6 +18,12 @@ const Index = () => {
     bookBag: {
       capacity: 100,
       currentSize: 0,
+    },
+    weapon: {
+      id: "fists",
+      name: "Fists",
+      winChance: 0.45,
+      cooldown: 0
     },
   });
 
@@ -87,6 +94,21 @@ const Index = () => {
     }));
   };
 
+  const handleBuyWeapon = (weapon: Weapon) => {
+    if (gameState.money >= weapon.price) {
+      setGameState(prev => ({
+        ...prev,
+        money: prev.money - weapon.price,
+        weapon: {
+          id: weapon.id,
+          name: weapon.name,
+          winChance: weapon.winChance,
+          cooldown: 0
+        }
+      }));
+    }
+  };
+
   const currentLocation = priceState.locations.find(
     loc => loc.id === gameState.currentLocation
   );
@@ -104,6 +126,8 @@ const Index = () => {
               location={location}
               currentLocation={gameState.currentLocation}
               onTravel={handleTravel}
+              gameState={gameState}
+              setGameState={setGameState}
             />
           ))}
         </div>
@@ -111,13 +135,19 @@ const Index = () => {
         <div>
           <h2 className="text-xl font-bold text-white mb-4">Market</h2>
           {currentLocation && (
-            <Inventory
-              gameState={gameState}
-              items={items}
-              locationPrices={currentLocation.prices}
-              onBuy={handleBuy}
-              onSell={handleSell}
-            />
+            <>
+              <Inventory
+                gameState={gameState}
+                items={items}
+                locationPrices={currentLocation.prices}
+                onBuy={handleBuy}
+                onSell={handleSell}
+              />
+              <WeaponsShop
+                gameState={gameState}
+                onBuyWeapon={handleBuyWeapon}
+              />
+            </>
           )}
         </div>
       </div>
