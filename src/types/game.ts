@@ -6,6 +6,13 @@ export interface Item {
   maxPrice: number;
 }
 
+export interface BookBag {
+  id: string;
+  name: string;
+  capacity: number;
+  price: number;
+}
+
 export interface Location {
   id: string;
   name: string;
@@ -20,6 +27,10 @@ export interface GameState {
   currentLocation: string;
   inventory: Record<string, number>;
   health: number;
+  bookBag: {
+    capacity: number;
+    currentSize: number;
+  };
 }
 
 export interface PriceState {

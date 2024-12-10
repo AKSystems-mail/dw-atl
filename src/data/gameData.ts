@@ -1,8 +1,35 @@
-import { Item, Location } from "../types/game";
+import { Item, Location, BookBag } from "../types/game";
 
 export const INITIAL_MONEY = 2000;
 export const INITIAL_DEBT = 5500;
 export const GAME_LENGTH = 30;
+
+export const bookBags: BookBag[] = [
+  {
+    id: "starter",
+    name: "Starter Bookbag",
+    capacity: 100,
+    price: 0
+  },
+  {
+    id: "medium",
+    name: "Medium Bookbag",
+    capacity: 250,
+    price: 400
+  },
+  {
+    id: "large",
+    name: "Large Bookbag",
+    capacity: 600,
+    price: 1000
+  },
+  {
+    id: "xl",
+    name: "Extra Large Bookbag",
+    capacity: 1000,
+    price: 3000
+  },
+];
 
 export const items: Item[] = [
   {
@@ -64,7 +91,7 @@ export const locations: Location[] = [
   {
     id: "littlefive",
     name: "Little Five Points",
-    description: "Hipsters everywhere",
+    description: "Hipsters everywhere. Only place to buy bigger bookbags.",
     prices: {},
   },
   {

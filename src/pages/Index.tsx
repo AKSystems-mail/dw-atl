@@ -14,6 +14,10 @@ const Index = () => {
     currentLocation: "midtown",
     inventory: {},
     health: 100,
+    bookBag: {
+      capacity: 100,
+      currentSize: 0,
+    },
   });
 
   const [priceState, setPriceState] = useState<PriceState>({
@@ -53,6 +57,10 @@ const Index = () => {
         ...prev.inventory,
         [itemId]: (prev.inventory[itemId] || 0) + 1,
       },
+      bookBag: {
+        ...prev.bookBag,
+        currentSize: prev.bookBag.currentSize + 1,
+      },
     }));
   };
 
@@ -71,6 +79,10 @@ const Index = () => {
       inventory: {
         ...prev.inventory,
         [itemId]: prev.inventory[itemId] - 1,
+      },
+      bookBag: {
+        ...prev.bookBag,
+        currentSize: prev.bookBag.currentSize - 1,
       },
     }));
   };
