@@ -16,7 +16,7 @@ interface LocationCardProps {
   currentLocation: string;
   onTravel: (locationId: string, travelMethod: string) => void;
   gameState: GameState;
-  setGameState: (state: GameState) => void;
+  setGameState: (state: GameState | ((prev: GameState) => GameState)) => void;
 }
 
 interface TravelOption {
