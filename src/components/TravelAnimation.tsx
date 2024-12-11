@@ -11,8 +11,16 @@ export const TravelAnimation = ({ travelMethod, onComplete }: TravelAnimationPro
     const timer = setTimeout(() => {
       onComplete();
     }, 5000);
+
+    if (travelMethod === "marta") {
+      const audio = new Audio("/marta-chime.mp3");
+      audio.play().catch(error => {
+        console.log("Audio playback failed:", error);
+      });
+    }
+
     return () => clearTimeout(timer);
-  }, [onComplete]);
+  }, [onComplete, travelMethod]);
 
   const getIcon = () => {
     switch (travelMethod) {
