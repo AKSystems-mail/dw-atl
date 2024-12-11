@@ -52,18 +52,19 @@ export interface PriceState {
 }
 
 export interface RiskPenalty {
-  inventory: number;
-  cash: number;
+  inventory: number | ((to: string) => number);
+  cash: number | ((to: string) => number);
 }
 
 export interface RiskEscape {
   chance: number;
   penalty: RiskPenalty;
+  requiresWeapon?: boolean;
 }
 
 export interface Risk {
-  chance: number;
-  type: string;
+  chance: number | ((from: string, to: string, gameState: GameState) => number);
+  type: string | ((to: string) => string);
   escape?: {
     run?: RiskEscape;
     fight?: RiskEscape;
