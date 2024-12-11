@@ -50,3 +50,19 @@ export interface PriceState {
   locations: Location[];
   items: Item[];
 }
+
+export interface TravelOption {
+  id: string;
+  name: string;
+  getPrice: (fromLocation: string, toLocation: string) => number;
+  available: (fromLocation: string, toLocation: string) => boolean;
+  risk: {
+    chance: number;
+    type: string;
+    escape?: {
+      run?: { chance: number; penalty: { inventory: number; cash: number } };
+      fight?: { chance: number; penalty: { inventory: number; cash: number } };
+      bribe?: { chance: number; penalty: { inventory: number; cash: number } };
+    };
+  };
+}

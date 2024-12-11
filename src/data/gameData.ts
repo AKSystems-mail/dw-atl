@@ -135,6 +135,61 @@ export const weapons: Weapon[] = [
   }
 ];
 
+export const travelOptions: TravelOption[] = [
+  {
+    id: "marta",
+    name: "MARTA",
+    getPrice: () => 5,
+    available: (from, to) => {
+      return !([from, to].includes("cobbcounty"));
+    },
+    risk: {
+      chance: 0.13,
+      type: "MARTA police",
+      escape: {
+        run: { chance: 0.94, penalty: { inventory: 0.15, cash: 0.15 } },
+        fight: { chance: 0.08, penalty: { inventory: 0.4, cash: 0.5 } }
+      }
+    }
+  },
+  {
+    id: "ryde",
+    name: "Ryde",
+    getPrice: (from, to) => {
+      if (from === "cobbcounty" || to === "cobbcounty") {
+        return 60;
+      }
+      return 25;
+    },
+    available: () => true,
+    risk: {
+      chance: 0.03,
+      type: "undercover cop",
+      escape: {
+        bribe: { chance: 0.4, penalty: { inventory: 1, cash: 0.5 } }
+      }
+    }
+  },
+  {
+    id: "drive",
+    name: "Drive",
+    getPrice: (from, to) => {
+      if (from === "cobbcounty" || to === "cobbcounty") {
+        return 30;
+      }
+      return 20;
+    },
+    available: () => true,
+    risk: {
+      chance: 0.09,
+      type: "GSP",
+      escape: {
+        run: { chance: 0.11, penalty: { inventory: 1, cash: 1 } }
+      }
+    }
+  },
+];
+
 export const generatePrices = () => {
   return locations.map(location => {
     // Randomly select 3-4 items for this location

@@ -10,6 +10,10 @@ import {
 import { useState, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { GameState } from "../types/game";
+import { LocationPrices } from "./LocationPrices";
+import { TravelDialog } from "./TravelDialog";
+import { TravelAnimation } from "./TravelAnimation";
+import { travelOptions } from "../data/gameData";
 
 interface LocationCardProps {
   location: Location;
@@ -19,82 +23,14 @@ interface LocationCardProps {
   setGameState: (state: GameState | ((prev: GameState) => GameState)) => void;
 }
 
-interface TravelOption {
-  id: string;
-  name: string;
-  getPrice: (fromLocation: string, toLocation: string) => number;
-  available: (fromLocation: string, toLocation: string) => boolean;
-  risk: {
-    chance: number;
-    type: string;
-    escape?: {
-      run?: { chance: number; penalty: { inventory: number; cash: number } };
-      fight?: { chance: number; penalty: { inventory: number; cash: number } };
-      bribe?: { chance: number; penalty: { inventory: number; cash: number } };
-    };
-  };
-}
-
-const travelOptions: TravelOption[] = [
-  {
-    id: "marta",
-    name: "MARTA",
-    getPrice: () => 5,
-    available: (from, to) => {
-      return !([from, to].includes("cobbcounty"));
-    },
-    risk: {
-      chance: 0.13,
-      type: "MARTA police",
-      escape: {
-        run: { chance: 0.94, penalty: { inventory: 0.15, cash: 0.15 } },
-        fight: { chance: 0.08, penalty: { inventory: 0.4, cash: 0.5 } }
-      }
-    }
-  },
-  {
-    id: "ryde",
-    name: "Ryde",
-    getPrice: (from, to) => {
-      if (from === "cobbcounty" || to === "cobbcounty") {
-        return 60;
-      }
-      return 25;
-    },
-    available: () => true,
-    risk: {
-      chance: 0.03,
-      type: "undercover cop",
-      escape: {
-        bribe: { chance: 0.4, penalty: { inventory: 1, cash: 0.5 } }
-      }
-    }
-  },
-  {
-    id: "drive",
-    name: "Drive",
-    getPrice: (from, to) => {
-      if (from === "cobbcounty" || to === "cobbcounty") {
-        return 30;
-      }
-      return 20;
-    },
-    available: () => true,
-    risk: {
-      chance: 0.32,
-      type: "GSP",
-      escape: {
-        run: { chance: 0.11, penalty: { inventory: 1, cash: 1 } }
-      }
-    }
-  },
-];
-
 export const LocationCard = ({ location, currentLocation, onTravel, gameState, setGameState }: LocationCardProps) => {
   const [showTravelOptions, setShowTravelOptions] = useState(false);
   const [showRiskDialog, setShowRiskDialog] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<TravelOption | null>(null);
+  const [selectedOption, setSelectedOption] = useState<typeof travelOptions[0] | null>(null);
   const [rydeCooldown, setRydeCooldown] = useState(0);
+  const [showTravelAnimation, setShowTravelAnimation] = useState(false);
+  const [currentTravelMethod, setCurrentTravelMethod] = useState<string>("");
+  
   const isCurrentLocation = location.id === currentLocation;
   
   useEffect(() => {
@@ -106,7 +42,7 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
     }
   }, [rydeCooldown]);
 
-  const handleTravel = (option: TravelOption) => {
+  const handleTravel = (option: typeof travelOptions[0]) => {
     if (option.id === "ryde" && rydeCooldown > 0) {
       toast({
         title: "Ryde Cooldown",
@@ -133,7 +69,7 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
     }
   };
 
-  const completeTravelWithoutIncident = (option: TravelOption) => {
+  const completeTravelWithoutIncident = (option: typeof travelOptions[0]) => {
     const travelCost = option.getPrice(currentLocation, location.id);
     
     if (option.id === "ryde") {
@@ -144,9 +80,15 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
       ...prev,
       money: prev.money - travelCost
     }));
-    
-    onTravel(location.id, option.id);
+
+    setCurrentTravelMethod(option.id);
+    setShowTravelAnimation(true);
     setShowTravelOptions(false);
+  };
+
+  const handleAnimationComplete = () => {
+    setShowTravelAnimation(false);
+    onTravel(location.id, currentTravelMethod);
   };
 
   const handleEscapeAttempt = (escapeMethod: string) => {
@@ -180,7 +122,8 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
           }
         }));
       }
-      onTravel(location.id, selectedOption.id);
+      setCurrentTravelMethod(selectedOption.id);
+      setShowTravelAnimation(true);
     } else {
       if (selectedOption.id === "drive") {
         toast({
@@ -193,11 +136,11 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
           title: "Caught!",
           description: `You were caught and lost items and cash.`
         });
-        onTravel(location.id, selectedOption.id);
+        setCurrentTravelMethod(selectedOption.id);
+        setShowTravelAnimation(true);
       }
     }
     setShowRiskDialog(false);
-    setShowTravelOptions(false);
   };
 
   return (
@@ -214,44 +157,18 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
         )}
       </div>
       <p className="text-sm text-gray-400">{location.description}</p>
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        {Object.entries(location.prices).map(([itemId, price]) => (
-          <div key={itemId} className="text-sm">
-            <span className="text-game-accent2">{itemId}:</span>
-            <span className="text-white ml-2">${price}</span>
-          </div>
-        ))}
-      </div>
+      
+      <LocationPrices location={location} isCurrentLocation={isCurrentLocation} />
 
-      <Dialog open={showTravelOptions} onOpenChange={setShowTravelOptions}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Choose Travel Option to {location.name}</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {travelOptions.map((option) => {
-              if (!option.available(currentLocation, location.id)) return null;
-              const price = option.getPrice(currentLocation, location.id);
-              const isRydeDisabled = option.id === "ryde" && rydeCooldown > 0;
-              return (
-                <Button
-                  key={option.id}
-                  onClick={() => handleTravel(option)}
-                  className="w-full justify-between"
-                  variant="outline"
-                  disabled={isRydeDisabled}
-                >
-                  <span>{option.name}</span>
-                  <div className="flex gap-2 items-center">
-                    <span>${price}</span>
-                    {isRydeDisabled && <span>({rydeCooldown}s)</span>}
-                  </div>
-                </Button>
-              );
-            })}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <TravelDialog
+        open={showTravelOptions}
+        onOpenChange={setShowTravelOptions}
+        travelOptions={travelOptions}
+        onTravel={handleTravel}
+        currentLocation={currentLocation}
+        destinationId={location.id}
+        rydeCooldown={rydeCooldown}
+      />
 
       <Dialog open={showRiskDialog} onOpenChange={setShowRiskDialog}>
         <DialogContent>
@@ -285,6 +202,13 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
           </div>
         </DialogContent>
       </Dialog>
+
+      {showTravelAnimation && (
+        <TravelAnimation
+          travelMethod={currentTravelMethod}
+          onComplete={handleAnimationComplete}
+        />
+      )}
     </div>
   );
 };
