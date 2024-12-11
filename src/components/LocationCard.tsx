@@ -7,6 +7,7 @@ import { TravelAnimation } from "./TravelAnimation";
 import { RiskDialog } from "./RiskDialog";
 import { TravelManager } from "./travel/TravelManager";
 import { travelOptions } from "../data/travelData";
+import { DebtRepayment } from "./DebtRepayment";
 
 interface LocationCardProps {
   location: Location;
@@ -24,6 +25,7 @@ export const LocationCard = ({
   setGameState 
 }: LocationCardProps) => {
   const isCurrentLocation = location.id === currentLocation;
+  const showDebtRepayment = isCurrentLocation && location.id === "buckhead" && gameState.debt > 0;
 
   const {
     showTravelOptions,
@@ -61,6 +63,10 @@ export const LocationCard = ({
       <p className="text-sm text-gray-400">{location.description}</p>
       
       <LocationPrices location={location} isCurrentLocation={isCurrentLocation} />
+
+      {showDebtRepayment && (
+        <DebtRepayment gameState={gameState} setGameState={setGameState} />
+      )}
 
       <TravelDialog
         open={showTravelOptions}
