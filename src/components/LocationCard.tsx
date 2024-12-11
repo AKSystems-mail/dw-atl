@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Location } from "../types/game";
+import { Location, GameState } from "../types/game";
 import { Button } from "@/components/ui/button";
 import { LocationPrices } from "./LocationPrices";
 import { TravelDialog } from "./TravelDialog";
 import { TravelAnimation } from "./TravelAnimation";
 import { RiskDialog } from "./RiskDialog";
 import { TravelManager } from "./travel/TravelManager";
+import { travelOptions } from "../data/travelData";
 
 interface LocationCardProps {
   location: Location;
