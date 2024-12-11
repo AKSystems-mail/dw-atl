@@ -1,19 +1,14 @@
 import { Location } from "../types/game";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { GameState } from "../types/game";
 import { LocationPrices } from "./LocationPrices";
 import { TravelDialog } from "./TravelDialog";
 import { TravelAnimation } from "./TravelAnimation";
+import { RiskDialog } from "./RiskDialog";
 import { travelOptions, locationRisks } from "../data/gameData";
+import { applyPenalties } from "../utils/riskCalculations";
 
 interface LocationCardProps {
   location: Location;
@@ -23,7 +18,13 @@ interface LocationCardProps {
   setGameState: (state: GameState | ((prev: GameState) => GameState)) => void;
 }
 
-export const LocationCard = ({ location, currentLocation, onTravel, gameState, setGameState }: LocationCardProps) => {
+export const LocationCard = ({ 
+  location, 
+  currentLocation, 
+  onTravel, 
+  gameState, 
+  setGameState 
+}: LocationCardProps) => {
   const [showTravelOptions, setShowTravelOptions] = useState(false);
   const [showRiskDialog, setShowRiskDialog] = useState(false);
   const [selectedOption, setSelectedOption] = useState<typeof travelOptions[0] | null>(null);
@@ -32,7 +33,7 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
   const [currentTravelMethod, setCurrentTravelMethod] = useState<string>("");
   
   const isCurrentLocation = location.id === currentLocation;
-  
+
   useEffect(() => {
     if (rydeCooldown > 0) {
       const timer = setTimeout(() => {
@@ -60,7 +61,6 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
       return;
     }
 
-    // Check for location-specific risks first
     if (location.id === "westend") {
       const risk = locationRisks.westend;
       const roll = Math.random();
@@ -71,7 +71,6 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
       }
     }
 
-    // Check for travel-specific risks
     const riskChance = typeof option.risk.chance === 'function' 
       ? option.risk.chance(currentLocation, location.id, gameState)
       : option.risk.chance;
@@ -110,7 +109,6 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
   const handleEscapeAttempt = (escapeMethod: string) => {
     if (!selectedOption) return;
 
-    // Handle location-specific risks
     if (location.id === "westend" && locationRisks.westend) {
       const risk = locationRisks.westend;
       if (escapeMethod === 'fight' && gameState.weapon.id === 'fists') {
@@ -132,14 +130,12 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
           title: "Game Over",
           description: "You lost the fight with the YNs!"
         });
-        // Handle game over
       } else {
         handleFailedEscape(escape.penalty);
       }
       return;
     }
 
-    // Handle regular travel risks
     const escape = selectedOption.risk.escape?.[escapeMethod as keyof typeof selectedOption.risk.escape];
     if (!escape) return;
 
@@ -162,37 +158,32 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
     setShowRiskDialog(false);
   };
 
-  const handleSuccessfulEscape = (penalty: { inventory: number; cash: number }) => {
+  const handleSuccessfulEscape = (penalty: RiskPenalty) => {
     toast({
       title: "Escaped!",
       description: "You got away but lost some items and cash."
     });
-    applyPenalties(penalty);
+    const updates = applyPenalties(gameState, penalty, location.id);
+    setGameState(prev => ({
+      ...prev,
+      ...updates
+    }));
     setCurrentTravelMethod(selectedOption!.id);
     setShowTravelAnimation(true);
   };
 
-  const handleFailedEscape = (penalty: { inventory: number; cash: number }) => {
+  const handleFailedEscape = (penalty: RiskPenalty) => {
     toast({
       title: "Caught!",
       description: "You were caught and lost items and cash."
     });
-    applyPenalties(penalty);
-    setCurrentTravelMethod(selectedOption!.id);
-    setShowTravelAnimation(true);
-  };
-
-  const applyPenalties = (penalty: { inventory: number; cash: number }) => {
+    const updates = applyPenalties(gameState, penalty, location.id);
     setGameState(prev => ({
       ...prev,
-      money: Math.floor(prev.money * (1 - penalty.cash)),
-      inventory: Object.fromEntries(
-        Object.entries(prev.inventory).map(([id, amount]) => [
-          id,
-          Math.floor(amount * (1 - penalty.inventory))
-        ])
-      )
+      ...updates
     }));
+    setCurrentTravelMethod(selectedOption!.id);
+    setShowTravelAnimation(true);
   };
 
   return (
@@ -222,38 +213,13 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
         rydeCooldown={rydeCooldown}
       />
 
-      <Dialog open={showRiskDialog} onOpenChange={setShowRiskDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Police Encounter!</DialogTitle>
-            <DialogDescription>
-              You've been spotted by {selectedOption?.risk.type}!
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {selectedOption?.risk.escape?.run && (
-              <Button onClick={() => handleEscapeAttempt('run')} variant="outline">
-                Run (94% escape chance)
-              </Button>
-            )}
-            {selectedOption?.risk.escape?.fight && (
-              <Button 
-                onClick={() => handleEscapeAttempt('fight')} 
-                variant="outline"
-                disabled={gameState.weapon.cooldown > 0}
-              >
-                Fight with {gameState.weapon.name} ({(gameState.weapon.winChance * 100).toFixed(0)}% escape chance)
-                {gameState.weapon.cooldown > 0 && ` (${gameState.weapon.cooldown}m cooldown)`}
-              </Button>
-            )}
-            {selectedOption?.risk.escape?.bribe && (
-              <Button onClick={() => handleEscapeAttempt('bribe')} variant="outline">
-                Bribe (40% escape chance)
-              </Button>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <RiskDialog
+        open={showRiskDialog}
+        onOpenChange={setShowRiskDialog}
+        selectedOption={selectedOption}
+        onEscapeAttempt={handleEscapeAttempt}
+        gameState={gameState}
+      />
 
       {showTravelAnimation && (
         <TravelAnimation
