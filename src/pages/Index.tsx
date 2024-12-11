@@ -4,7 +4,7 @@ import { LocationCard } from "../components/LocationCard";
 import { Inventory } from "../components/Inventory";
 import { WeaponsShop } from "../components/WeaponsShop";
 import { GameState, Location, PriceState, Weapon } from "../types/game";
-import { INITIAL_MONEY, INITIAL_DEBT, items, generatePrices } from "../data/gameData";
+import { INITIAL_MONEY, INITIAL_DEBT, items, generatePrices, DAILY_INTEREST_RATE } from "../data/gameData";
 import { toast } from "@/components/ui/use-toast";
 
 const Index = () => {
@@ -37,6 +37,7 @@ const Index = () => {
       ...prev,
       currentLocation: locationId,
       day: prev.day + 1,
+      debt: prev.debt > 0 ? Math.floor(prev.debt * (1 + DAILY_INTEREST_RATE)) : 0
     }));
     setPriceState(prev => ({
       ...prev,

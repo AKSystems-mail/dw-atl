@@ -1,7 +1,8 @@
 import { Item, Location, BookBag, Weapon, TravelOption } from "../types/game";
 
 export const INITIAL_MONEY = 2000;
-export const INITIAL_DEBT = 5500;
+export const INITIAL_DEBT = 10000;
+export const DAILY_INTEREST_RATE = 0.06;
 export const GAME_LENGTH = 30;
 
 export const bookBags: BookBag[] = [
@@ -153,24 +154,6 @@ export const travelOptions: TravelOption[] = [
     }
   },
   {
-    id: "ryde",
-    name: "Ryde",
-    getPrice: (from, to) => {
-      if (from === "cobbcounty" || to === "cobbcounty") {
-        return 60;
-      }
-      return 25;
-    },
-    available: () => true,
-    risk: {
-      chance: 0.03,
-      type: "undercover cop",
-      escape: {
-        bribe: { chance: 0.4, penalty: { inventory: 1, cash: 0.5 } }
-      }
-    }
-  },
-  {
     id: "drive",
     name: "Drive",
     getPrice: (from, to) => {
@@ -181,14 +164,54 @@ export const travelOptions: TravelOption[] = [
     },
     available: () => true,
     risk: {
-      chance: 0.09,
-      type: "GSP",
+      chance: to => to === "midtown" ? 0.08 : 0.09,
+      type: (to) => to === "midtown" ? "Water Boys" : "GSP",
       escape: {
-        run: { chance: 0.11, penalty: { inventory: 1, cash: 1 } }
+        run: { 
+          chance: 0.11, 
+          penalty: { 
+            inventory: to => to === "midtown" ? 0.3 : 1, 
+            cash: to => to === "midtown" ? 0.3 : 1 
+          } 
+        }
       }
     }
   },
+  {
+    id: "ryde",
+    name: "Ryde",
+    getPrice: (from, to) => {
+      if (from === "cobbcounty" || to === "cobbcounty") {
+        return 60;
+      }
+      return 25;
+    },
+    available: () => true,
+    risk: {
+      chance: (_, __, gameState) => gameState.debt === 0 ? 0.01 : 0.03,
+      type: "undercover cop",
+      escape: {
+        bribe: { chance: 0.4, penalty: { inventory: 1, cash: 0.5 } }
+      }
+    }
+  }
 ];
+
+// Special location-specific risks
+export const locationRisks = {
+  westend: {
+    chance: 0.10,
+    type: "YNs",
+    escape: {
+      run: { chance: 0.78, penalty: { inventory: 0.2, cash: 0.2 } },
+      fight: { 
+        chance: 0.5, 
+        penalty: { inventory: 1, cash: 1 },
+        requiresWeapon: true 
+      }
+    }
+  }
+};
 
 export const generatePrices = () => {
   return locations.map(location => {
@@ -211,4 +234,3 @@ export const generatePrices = () => {
     };
   });
 };
-

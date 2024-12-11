@@ -51,18 +51,32 @@ export interface PriceState {
   items: Item[];
 }
 
+export interface RiskPenalty {
+  inventory: number;
+  cash: number;
+}
+
+export interface RiskEscape {
+  chance: number;
+  penalty: RiskPenalty;
+}
+
+export interface Risk {
+  chance: number;
+  type: string;
+  escape?: {
+    run?: RiskEscape;
+    fight?: RiskEscape;
+    bribe?: RiskEscape;
+  };
+  location?: string; // Specific location where this risk applies
+  condition?: (gameState: GameState) => boolean; // Additional conditions for the risk
+}
+
 export interface TravelOption {
   id: string;
   name: string;
   getPrice: (fromLocation: string, toLocation: string) => number;
   available: (fromLocation: string, toLocation: string) => boolean;
-  risk: {
-    chance: number;
-    type: string;
-    escape?: {
-      run?: { chance: number; penalty: { inventory: number; cash: number } };
-      fight?: { chance: number; penalty: { inventory: number; cash: number } };
-      bribe?: { chance: number; penalty: { inventory: number; cash: number } };
-    };
-  };
+  risk: Risk;
 }

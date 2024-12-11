@@ -13,7 +13,7 @@ import { GameState } from "../types/game";
 import { LocationPrices } from "./LocationPrices";
 import { TravelDialog } from "./TravelDialog";
 import { TravelAnimation } from "./TravelAnimation";
-import { travelOptions } from "../data/gameData";
+import { travelOptions, locationRisks } from "../data/gameData";
 
 interface LocationCardProps {
   location: Location;
@@ -60,8 +60,24 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
       return;
     }
 
+    // Check for location-specific risks first
+    if (location.id === "westend") {
+      const risk = locationRisks.westend;
+      const roll = Math.random();
+      if (roll < risk.chance) {
+        setSelectedOption(option);
+        setShowRiskDialog(true);
+        return;
+      }
+    }
+
+    // Check for travel-specific risks
+    const riskChance = typeof option.risk.chance === 'function' 
+      ? option.risk.chance(currentLocation, location.id, gameState)
+      : option.risk.chance;
+
     const roll = Math.random();
-    if (roll < option.risk.chance) {
+    if (roll < riskChance) {
       setSelectedOption(option);
       setShowRiskDialog(true);
     } else {
@@ -94,6 +110,36 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
   const handleEscapeAttempt = (escapeMethod: string) => {
     if (!selectedOption) return;
 
+    // Handle location-specific risks
+    if (location.id === "westend" && locationRisks.westend) {
+      const risk = locationRisks.westend;
+      if (escapeMethod === 'fight' && gameState.weapon.id === 'fists') {
+        toast({
+          title: "No Weapon",
+          description: "You need a weapon to fight the YNs!"
+        });
+        return;
+      }
+
+      const roll = Math.random();
+      const escape = risk.escape[escapeMethod as keyof typeof risk.escape];
+      if (!escape) return;
+
+      if (roll < escape.chance) {
+        handleSuccessfulEscape(escape.penalty);
+      } else if (escapeMethod === 'fight') {
+        toast({
+          title: "Game Over",
+          description: "You lost the fight with the YNs!"
+        });
+        // Handle game over
+      } else {
+        handleFailedEscape(escape.penalty);
+      }
+      return;
+    }
+
+    // Handle regular travel risks
     const escape = selectedOption.risk.escape?.[escapeMethod as keyof typeof selectedOption.risk.escape];
     if (!escape) return;
 
@@ -109,38 +155,44 @@ export const LocationCard = ({ location, currentLocation, onTravel, gameState, s
     const winChance = escapeMethod === 'fight' ? gameState.weapon.winChance : escape.chance;
 
     if (roll < winChance) {
-      toast({
-        title: "Escaped!",
-        description: `You got away but lost some items and cash.`
-      });
-      if (escapeMethod === 'fight') {
-        setGameState(prev => ({
-          ...prev,
-          weapon: {
-            ...prev.weapon,
-            cooldown: 7
-          }
-        }));
-      }
-      setCurrentTravelMethod(selectedOption.id);
-      setShowTravelAnimation(true);
+      handleSuccessfulEscape(escape.penalty);
     } else {
-      if (selectedOption.id === "drive") {
-        toast({
-          title: "Game Over",
-          description: "You were caught by GSP!"
-        });
-        // Handle game over
-      } else {
-        toast({
-          title: "Caught!",
-          description: `You were caught and lost items and cash.`
-        });
-        setCurrentTravelMethod(selectedOption.id);
-        setShowTravelAnimation(true);
-      }
+      handleFailedEscape(escape.penalty);
     }
     setShowRiskDialog(false);
+  };
+
+  const handleSuccessfulEscape = (penalty: { inventory: number; cash: number }) => {
+    toast({
+      title: "Escaped!",
+      description: "You got away but lost some items and cash."
+    });
+    applyPenalties(penalty);
+    setCurrentTravelMethod(selectedOption!.id);
+    setShowTravelAnimation(true);
+  };
+
+  const handleFailedEscape = (penalty: { inventory: number; cash: number }) => {
+    toast({
+      title: "Caught!",
+      description: "You were caught and lost items and cash."
+    });
+    applyPenalties(penalty);
+    setCurrentTravelMethod(selectedOption!.id);
+    setShowTravelAnimation(true);
+  };
+
+  const applyPenalties = (penalty: { inventory: number; cash: number }) => {
+    setGameState(prev => ({
+      ...prev,
+      money: Math.floor(prev.money * (1 - penalty.cash)),
+      inventory: Object.fromEntries(
+        Object.entries(prev.inventory).map(([id, amount]) => [
+          id,
+          Math.floor(amount * (1 - penalty.inventory))
+        ])
+      )
+    }));
   };
 
   return (
