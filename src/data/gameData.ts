@@ -1,4 +1,4 @@
-import { Item, Location, BookBag, Weapon } from "../types/game";
+import { Item, Location, BookBag, Weapon, TravelOption } from "../types/game";
 
 export const INITIAL_MONEY = 2000;
 export const INITIAL_DEBT = 5500;
@@ -211,3 +211,4 @@ export const generatePrices = () => {
     };
   });
 };
+

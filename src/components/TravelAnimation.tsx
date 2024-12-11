@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Car, Bus, Taxi } from "lucide-react";
+import { Car, Bus, CarFront } from "lucide-react";
 
 interface TravelAnimationProps {
   travelMethod: string;
@@ -19,7 +19,7 @@ export const TravelAnimation = ({ travelMethod, onComplete }: TravelAnimationPro
       case "marta":
         return <Bus className="w-16 h-16" />;
       case "ryde":
-        return <Taxi className="w-16 h-16" />;
+        return <CarFront className="w-16 h-16" />;
       case "drive":
         return <Car className="w-16 h-16" />;
       default:
