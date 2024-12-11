@@ -110,44 +110,49 @@ export const locations: Location[] = [
   },
 ];
 
-export const weapons: Weapon[] = [
-  {
-    id: "fists",
-    name: "Fists",
-    price: 0,
-    winChance: 0.45
-  },
-  {
-    id: "blicky",
-    name: "Blicky",
-    price: 300,
-    winChance: 0.52
-  },
-  {
-    id: "strap",
-    name: "Strap",
-    price: 550,
-    winChance: 0.63
-  },
-  {
-    id: "draco",
-    name: "Draco",
-    price: 3000,
-    winChance: 0.77
-  }
-];
+const generateMarketCondition = () => {
+  const rand = Math.random();
+  if (rand < 0.15) return 'high-demand';
+  if (rand < 0.30) return 'flooded';
+  return 'normal';
+};
+
+const getAffectedItems = (items: Item[]) => {
+  return items
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 1 + Math.floor(Math.random() * 2)); // Affects 1-2 items randomly
+};
 
 export const generatePrices = () => {
   return locations.map(location => {
+    const marketCondition = generateMarketCondition();
     const availableItems = [...items]
       .sort(() => Math.random() - 0.5)
       .slice(0, 3 + Math.floor(Math.random() * 2));
 
+    const affectedItems = getAffectedItems(availableItems);
+    const affectedItemIds = new Set(affectedItems.map(item => item.id));
+
     const prices = Object.fromEntries(
-      availableItems.map(item => [
-        item.id,
-        Math.floor(item.basePrice * (0.5 + Math.random())),
-      ])
+      availableItems.map(item => {
+        let price;
+        if (affectedItemIds.has(item.id)) {
+          if (marketCondition === 'high-demand') {
+            // High demand: Price near or at maximum
+            price = Math.floor(item.maxPrice * (0.9 + Math.random() * 0.1));
+          } else if (marketCondition === 'flooded') {
+            // Market flooded: Price near or at minimum
+            price = Math.floor(item.minPrice * (1 + Math.random() * 0.1));
+          } else {
+            // Normal price calculation
+            price = Math.floor(item.basePrice * (0.5 + Math.random()));
+          }
+        } else {
+          // Normal price calculation for unaffected items
+          price = Math.floor(item.basePrice * (0.5 + Math.random()));
+        }
+        return [item.id, price];
+      })
     );
 
     return {
