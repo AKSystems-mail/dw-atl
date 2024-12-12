@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { StatsBar } from "../components/StatsBar";
-import { LocationCard } from "../components/LocationCard";
-import { Inventory } from "../components/Inventory";
-import { WeaponsShop } from "../components/WeaponsShop";
 import { GameState, Location, PriceState, Weapon } from "../types/game";
 import { INITIAL_MONEY, INITIAL_DEBT, items, generatePrices, DAILY_INTEREST_RATE } from "../data/gameData";
 import { toast } from "@/components/ui/use-toast";
+import { LocationsContainer } from "../components/locations/LocationsContainer";
+import { MarketContainer } from "../components/market/MarketContainer";
 
 const Index = () => {
   const [gameState, setGameState] = useState<GameState>({
@@ -136,36 +135,24 @@ const Index = () => {
       <StatsBar gameState={gameState} />
       
       <div className="grid md:grid-cols-2 gap-4">
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-white mb-4">Locations</h2>
-          {priceState.locations.map(location => (
-            <LocationCard
-              key={location.id}
-              location={location}
-              currentLocation={gameState.currentLocation}
-              onTravel={handleTravel}
-              gameState={gameState}
-              setGameState={setGameState}
-            />
-          ))}
-        </div>
+        <LocationsContainer
+          locations={priceState.locations}
+          currentLocation={gameState.currentLocation}
+          onTravel={handleTravel}
+          gameState={gameState}
+          setGameState={setGameState}
+        />
         
         <div>
-          <h2 className="text-xl font-bold text-white mb-4">Market</h2>
           {currentLocation && (
-            <>
-              <Inventory
-                gameState={gameState}
-                items={items}
-                locationPrices={currentLocation.prices}
-                onBuy={handleBuy}
-                onSell={handleSell}
-              />
-              <WeaponsShop
-                gameState={gameState}
-                onBuyWeapon={handleBuyWeapon}
-              />
-            </>
+            <MarketContainer
+              gameState={gameState}
+              currentLocationPrices={currentLocation.prices}
+              items={items}
+              onBuy={handleBuy}
+              onSell={handleSell}
+              onBuyWeapon={handleBuyWeapon}
+            />
           )}
         </div>
       </div>

@@ -2,6 +2,7 @@ import { GameState, Item, BookBag } from "../types/game";
 import { Button } from "@/components/ui/button";
 import { bookBags } from "../data/gameData";
 import { toast } from "@/components/ui/use-toast";
+import { InventoryItem } from "./market/InventoryItem";
 
 interface InventoryProps {
   gameState: GameState;
@@ -70,7 +71,6 @@ export const Inventory = ({ gameState, items, locationPrices, onBuy, onSell }: I
             <Button
               onClick={() => {
                 if (gameState.money >= nextBag.price) {
-                  // Handle upgrade logic in parent component
                   toast({
                     title: "Bookbag Upgraded",
                     description: `You now have a ${nextBag.name} with ${nextBag.capacity} capacity!`,
@@ -97,30 +97,18 @@ export const Inventory = ({ gameState, items, locationPrices, onBuy, onSell }: I
           const currentPrice = locationPrices[item.id];
           
           return (
-            <div key={item.id} className="flex justify-between items-center">
-              <div>
-                <div className="text-white">{item.name}</div>
-                <div className="text-sm text-game-accent">
-                  Owned: {owned} | Price: ${currentPrice}
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => handleBuy(item.id)}
-                  disabled={gameState.money < currentPrice || gameState.bookBag.currentSize >= gameState.bookBag.capacity}
-                  className="bg-game-accent hover:bg-game-accent/80 text-black"
-                >
-                  Buy
-                </Button>
-                <Button
-                  onClick={() => handleSell(item.id)}
-                  disabled={owned === 0}
-                  className="bg-game-accent2 hover:bg-game-accent2/80 text-white"
-                >
-                  Sell
-                </Button>
-              </div>
-            </div>
+            <InventoryItem
+              key={item.id}
+              itemId={item.id}
+              itemName={item.name}
+              owned={owned}
+              currentPrice={currentPrice}
+              onBuy={() => handleBuy(item.id)}
+              onSell={() => handleSell(item.id)}
+              gameState={gameState}
+              bagCapacity={gameState.bookBag.capacity}
+              bagCurrentSize={gameState.bookBag.currentSize}
+            />
           );
         })}
       </div>
