@@ -17,6 +17,16 @@ export const Inventory = ({ gameState, items, locationPrices, onBuy, onSell }: I
   const nextBag = bookBags[currentBagIndex + 1];
 
   const handleBuy = (itemId: string) => {
+    const price = locationPrices[itemId];
+    
+    if (gameState.money < price) {
+      toast({
+        title: "Not Enough Money",
+        description: `You need $${price} to buy this item.`,
+      });
+      return;
+    }
+
     if (gameState.bookBag.currentSize >= gameState.bookBag.capacity) {
       toast({
         title: "Inventory Full",
@@ -25,6 +35,18 @@ export const Inventory = ({ gameState, items, locationPrices, onBuy, onSell }: I
       return;
     }
     onBuy(itemId);
+  };
+
+  const handleSell = (itemId: string) => {
+    const owned = gameState.inventory[itemId] || 0;
+    if (owned <= 0) {
+      toast({
+        title: "No Items to Sell",
+        description: "You don't have any of this item to sell.",
+      });
+      return;
+    }
+    onSell(itemId);
   };
 
   return (
@@ -91,7 +113,7 @@ export const Inventory = ({ gameState, items, locationPrices, onBuy, onSell }: I
                   Buy
                 </Button>
                 <Button
-                  onClick={() => onSell(item.id)}
+                  onClick={() => handleSell(item.id)}
                   disabled={owned === 0}
                   className="bg-game-accent2 hover:bg-game-accent2/80 text-white"
                 >

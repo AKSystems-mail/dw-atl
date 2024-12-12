@@ -56,11 +56,17 @@ const Index = () => {
     if (!currentLocation) return;
 
     const price = currentLocation.prices[itemId];
-    if (gameState.money < price) return;
+    if (gameState.money < price) {
+      toast({
+        title: "Not Enough Money",
+        description: `You need $${price} to buy this item.`,
+      });
+      return;
+    }
 
     setGameState(prev => ({
       ...prev,
-      money: prev.money - price,
+      money: Math.max(0, prev.money - price),
       inventory: {
         ...prev.inventory,
         [itemId]: (prev.inventory[itemId] || 0) + 1,
@@ -79,7 +85,13 @@ const Index = () => {
     if (!currentLocation) return;
 
     const price = currentLocation.prices[itemId];
-    if (!gameState.inventory[itemId]) return;
+    if (!gameState.inventory[itemId] || gameState.inventory[itemId] <= 0) {
+      toast({
+        title: "No Items to Sell",
+        description: "You don't have any of this item to sell.",
+      });
+      return;
+    }
 
     setGameState(prev => ({
       ...prev,
@@ -93,6 +105,11 @@ const Index = () => {
         currentSize: prev.bookBag.currentSize - 1,
       },
     }));
+
+    toast({
+      title: "Item Sold",
+      description: `Sold for $${price}`,
+    });
   };
 
   const handleBuyWeapon = (weapon: Weapon) => {
