@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { StatsBar } from "../components/StatsBar";
-import { GameState, Location, PriceState, Weapon } from "../types/game";
+import { GameState, Location, PriceState, Weapon, GameSettings as GameSettingsType } from "../types/game";
 import { INITIAL_MONEY, INITIAL_DEBT, items, generatePrices, DAILY_INTEREST_RATE } from "../data/gameData";
 import { toast } from "@/components/ui/use-toast";
 import { LocationsContainer } from "../components/locations/LocationsContainer";
@@ -129,7 +129,7 @@ const Index = () => {
     }
   };
 
-  const handleSettingsChange = (newSettings: Partial<GameSettings>) => {
+  const handleSettingsChange = (newSettings: Partial<GameSettingsType>) => {
     setGameState(prev => {
       const updatedSettings = { ...prev.settings, ...newSettings };
       const difficultyConfig = difficultySettings[updatedSettings.difficulty];
