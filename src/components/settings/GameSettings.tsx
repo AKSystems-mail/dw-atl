@@ -49,7 +49,8 @@ export const GameSettings = ({ settings, onSettingsChange }: GameSettingsProps) 
         <Label htmlFor="difficulty" className="text-white">Difficulty</Label>
         <Select
           value={settings.difficulty}
-          onValueChange={(value) => onSettingsChange({ difficulty: value })}
+          onValueChange={(value: "mount_paran" | "east_atlanta" | "hapeville") => 
+            onSettingsChange({ difficulty: value })}
         >
           <SelectTrigger id="difficulty" className="w-full">
             <SelectValue placeholder="Select difficulty" />
