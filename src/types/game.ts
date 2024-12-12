@@ -44,6 +44,13 @@ export interface GameState {
     winChance: number;
     cooldown: number;
   };
+  settings: GameSettings;
+}
+
+export interface GameSettings {
+  sound: boolean;
+  duration: number;
+  difficulty: 'mount_paran' | 'east_atlanta' | 'hapeville';
 }
 
 export interface PriceState {

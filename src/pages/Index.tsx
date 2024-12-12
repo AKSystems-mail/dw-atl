@@ -5,11 +5,13 @@ import { INITIAL_MONEY, INITIAL_DEBT, items, generatePrices, DAILY_INTEREST_RATE
 import { toast } from "@/components/ui/use-toast";
 import { LocationsContainer } from "../components/locations/LocationsContainer";
 import { MarketContainer } from "../components/market/MarketContainer";
+import { GameSettings } from "../components/settings/GameSettings";
+import { defaultSettings, difficultySettings } from "../data/gameSettings";
 
 const Index = () => {
   const [gameState, setGameState] = useState<GameState>({
-    money: INITIAL_MONEY,
-    debt: INITIAL_DEBT,
+    money: difficultySettings.east_atlanta.initialMoney,
+    debt: difficultySettings.east_atlanta.initialDebt,
     day: 1,
     currentLocation: "midtown",
     inventory: {},
@@ -24,6 +26,7 @@ const Index = () => {
       winChance: 0.45,
       cooldown: 0
     },
+    settings: defaultSettings,
   });
 
   const [priceState, setPriceState] = useState<PriceState>({
@@ -126,6 +129,28 @@ const Index = () => {
     }
   };
 
+  const handleSettingsChange = (newSettings: Partial<GameSettings>) => {
+    setGameState(prev => {
+      const updatedSettings = { ...prev.settings, ...newSettings };
+      const difficultyConfig = difficultySettings[updatedSettings.difficulty];
+      
+      // Only update money and debt if difficulty changes
+      if (newSettings.difficulty) {
+        return {
+          ...prev,
+          settings: updatedSettings,
+          money: difficultyConfig.initialMoney,
+          debt: difficultyConfig.initialDebt
+        };
+      }
+      
+      return {
+        ...prev,
+        settings: updatedSettings
+      };
+    });
+  };
+
   const currentLocation = priceState.locations.find(
     loc => loc.id === gameState.currentLocation
   );
@@ -135,13 +160,19 @@ const Index = () => {
       <StatsBar gameState={gameState} />
       <div className="p-4 pt-24">
         <div className="grid md:grid-cols-2 gap-4">
-          <LocationsContainer
-            locations={priceState.locations}
-            currentLocation={gameState.currentLocation}
-            onTravel={handleTravel}
-            gameState={gameState}
-            setGameState={setGameState}
-          />
+          <div className="space-y-4">
+            <GameSettings
+              settings={gameState.settings}
+              onSettingsChange={handleSettingsChange}
+            />
+            <LocationsContainer
+              locations={priceState.locations}
+              currentLocation={gameState.currentLocation}
+              onTravel={handleTravel}
+              gameState={gameState}
+              setGameState={setGameState}
+            />
+          </div>
           
           <div>
             {currentLocation && (
