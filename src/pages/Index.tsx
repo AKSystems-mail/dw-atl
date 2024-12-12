@@ -131,29 +131,30 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-game-background p-4">
+    <div className="min-h-screen bg-game-background">
       <StatsBar gameState={gameState} />
-      
-      <div className="grid md:grid-cols-2 gap-4">
-        <LocationsContainer
-          locations={priceState.locations}
-          currentLocation={gameState.currentLocation}
-          onTravel={handleTravel}
-          gameState={gameState}
-          setGameState={setGameState}
-        />
-        
-        <div>
-          {currentLocation && (
-            <MarketContainer
-              gameState={gameState}
-              currentLocationPrices={currentLocation.prices}
-              items={items}
-              onBuy={handleBuy}
-              onSell={handleSell}
-              onBuyWeapon={handleBuyWeapon}
-            />
-          )}
+      <div className="p-4 pt-24">
+        <div className="grid md:grid-cols-2 gap-4">
+          <LocationsContainer
+            locations={priceState.locations}
+            currentLocation={gameState.currentLocation}
+            onTravel={handleTravel}
+            gameState={gameState}
+            setGameState={setGameState}
+          />
+          
+          <div>
+            {currentLocation && (
+              <MarketContainer
+                gameState={gameState}
+                currentLocationPrices={currentLocation.prices}
+                items={items}
+                onBuy={handleBuy}
+                onSell={handleSell}
+                onBuyWeapon={handleBuyWeapon}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

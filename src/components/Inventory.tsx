@@ -17,6 +17,9 @@ export const Inventory = ({ gameState, items, locationPrices, onBuy, onSell }: I
   const currentBagIndex = bookBags.findIndex(bag => bag.capacity === gameState.bookBag.capacity);
   const nextBag = bookBags[currentBagIndex + 1];
 
+  // Filter items that are available at the current location
+  const availableItems = items.filter(item => locationPrices[item.id] !== undefined);
+
   const handleBuy = (itemId: string) => {
     const price = locationPrices[itemId];
     
@@ -92,7 +95,7 @@ export const Inventory = ({ gameState, items, locationPrices, onBuy, onSell }: I
       )}
 
       <div className="space-y-4">
-        {items.map((item) => {
+        {availableItems.map((item) => {
           const owned = gameState.inventory[item.id] || 0;
           const currentPrice = locationPrices[item.id];
           
