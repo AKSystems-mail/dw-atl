@@ -3,6 +3,7 @@ import { LocationsContainer } from "../locations/LocationsContainer";
 import { MarketContainer } from "../market/MarketContainer";
 import { GameState, Location } from "../../types/game";
 import { Weapon } from "../../types/game";
+import { items } from "../../data/items"; // Add this import
 
 interface GameLayoutProps {
   gameState: GameState;
