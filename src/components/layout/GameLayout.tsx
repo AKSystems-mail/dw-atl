@@ -3,7 +3,7 @@ import { LocationsContainer } from "../locations/LocationsContainer";
 import { MarketContainer } from "../market/MarketContainer";
 import { GameState, Location } from "../../types/game";
 import { Weapon } from "../../types/game";
-import { items } from "../../data/items"; // Add this import
+import { items } from "../../data/items";
 
 interface GameLayoutProps {
   gameState: GameState;
@@ -27,7 +27,7 @@ export const GameLayout = ({
   onBuyWeapon,
 }: GameLayoutProps) => {
   return (
-    <div className="min-h-screen bg-game-background">
+    <div className="min-h-screen bg-game-background pb-[50vh]">
       <StatsBar gameState={gameState} />
       <div className="p-4 pt-24">
         <div className="space-y-4">
