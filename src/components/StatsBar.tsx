@@ -1,4 +1,5 @@
 import { GameState } from "../types/game";
+import { SettingsDialog } from "./settings/SettingsDialog";
 
 interface StatsBarProps {
   gameState: GameState;
@@ -22,9 +23,18 @@ export const StatsBar = ({ gameState }: StatsBarProps) => {
             <div className="font-bold">${displayDebt}</div>
           </div>
         </div>
-        <div>
-          <div className="text-sm text-game-accent">Day</div>
-          <div className="font-bold">{gameState.day} / 30</div>
+        <div className="flex items-center gap-4">
+          <div>
+            <div className="text-sm text-game-accent">Day</div>
+            <div className="font-bold">{gameState.day} / {gameState.settings.duration}</div>
+          </div>
+          <SettingsDialog 
+            settings={gameState.settings}
+            onSettingsChange={(newSettings) => {
+              const event = new CustomEvent('settingsChange', { detail: newSettings });
+              window.dispatchEvent(event);
+            }}
+          />
         </div>
       </div>
     </div>

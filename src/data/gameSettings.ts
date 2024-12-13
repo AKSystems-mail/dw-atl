@@ -8,15 +8,15 @@ export const defaultSettings: GameSettings = {
 
 export const difficultySettings = {
   mount_paran: {
-    initialMoney: 3000,
+    initialMoney: 6000,
     initialDebt: 8000
   },
   east_atlanta: {
-    initialMoney: 2000,
+    initialMoney: 4000,
     initialDebt: 10000
   },
   hapeville: {
-    initialMoney: 1000,
+    initialMoney: 4000,
     initialDebt: 12000
   }
 };

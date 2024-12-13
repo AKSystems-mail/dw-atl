@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { StatsBar } from "../components/StatsBar";
 import { GameState, Location, PriceState, Weapon, GameSettings as GameSettingsType } from "../types/game";
-import { INITIAL_MONEY, INITIAL_DEBT, items, generatePrices, DAILY_INTEREST_RATE } from "../data/gameData";
+import { items, generatePrices, DAILY_INTEREST_RATE } from "../data/gameData";
 import { toast } from "@/components/ui/use-toast";
-import { LocationsContainer } from "../components/locations/LocationsContainer";
-import { MarketContainer } from "../components/market/MarketContainer";
-import { GameSettings } from "../components/settings/GameSettings";
+import { GameLayout } from "../components/layout/GameLayout";
 import { defaultSettings, difficultySettings } from "../data/gameSettings";
 
 const Index = () => {
-  const [gameState, setGameState] = useState<GameState>({
+  const [gameState, setGameState] = useState<GameState>(() => ({
     money: difficultySettings.east_atlanta.initialMoney,
     debt: difficultySettings.east_atlanta.initialDebt,
     day: 1,
@@ -27,7 +24,7 @@ const Index = () => {
       cooldown: 0
     },
     settings: defaultSettings,
-  });
+  }));
 
   const [priceState, setPriceState] = useState<PriceState>({
     locations: generatePrices(),
@@ -134,13 +131,26 @@ const Index = () => {
       const updatedSettings = { ...prev.settings, ...newSettings };
       const difficultyConfig = difficultySettings[updatedSettings.difficulty];
       
-      // Only update money and debt if difficulty changes
-      if (newSettings.difficulty) {
+      // Reset game state if duration or difficulty changes
+      if (newSettings.duration || newSettings.difficulty) {
         return {
-          ...prev,
-          settings: updatedSettings,
           money: difficultyConfig.initialMoney,
-          debt: difficultyConfig.initialDebt
+          debt: difficultyConfig.initialDebt,
+          day: 1,
+          currentLocation: "midtown",
+          inventory: {},
+          health: 100,
+          bookBag: {
+            capacity: 100,
+            currentSize: 0,
+          },
+          weapon: {
+            id: "fists",
+            name: "Fists",
+            winChance: 0.45,
+            cooldown: 0
+          },
+          settings: updatedSettings
         };
       }
       
@@ -156,39 +166,16 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-game-background">
-      <StatsBar gameState={gameState} />
-      <div className="p-4 pt-24">
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="space-y-4">
-            <GameSettings
-              settings={gameState.settings}
-              onSettingsChange={handleSettingsChange}
-            />
-            <LocationsContainer
-              locations={priceState.locations}
-              currentLocation={gameState.currentLocation}
-              onTravel={handleTravel}
-              gameState={gameState}
-              setGameState={setGameState}
-            />
-          </div>
-          
-          <div>
-            {currentLocation && (
-              <MarketContainer
-                gameState={gameState}
-                currentLocationPrices={currentLocation.prices}
-                items={items}
-                onBuy={handleBuy}
-                onSell={handleSell}
-                onBuyWeapon={handleBuyWeapon}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    <GameLayout
+      gameState={gameState}
+      setGameState={setGameState}
+      locations={priceState.locations}
+      currentLocation={currentLocation}
+      onTravel={handleTravel}
+      onBuy={handleBuy}
+      onSell={handleSell}
+      onBuyWeapon={handleBuyWeapon}
+    />
   );
 };
 
