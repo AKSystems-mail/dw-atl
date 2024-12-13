@@ -77,11 +77,27 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.5" },
         },
+        "money-up": {
+          "0%": { transform: "translateY(0)", opacity: "1" },
+          "100%": { transform: "translateY(-20px)", opacity: "0" },
+        },
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "25%": { transform: "translateX(-2px)" },
+          "75%": { transform: "translateX(2px)" },
+        },
+        glow: {
+          "0%, 100%": { boxShadow: "0 0 5px theme(colors.game.accent)" },
+          "50%": { boxShadow: "0 0 20px theme(colors.game.accent)" },
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "money-up": "money-up 0.5s ease-out forwards",
+        shake: "shake 0.5s ease-in-out",
+        glow: "glow 2s ease-in-out infinite"
       },
     },
   },

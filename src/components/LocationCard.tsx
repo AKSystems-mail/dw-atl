@@ -24,6 +24,7 @@ export const LocationCard = ({
   gameState, 
   setGameState 
 }: LocationCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
   const isCurrentLocation = location.id === currentLocation;
   const showDebtRepayment = isCurrentLocation && location.id === "buckhead" && gameState.debt > 0;
 
@@ -48,13 +49,20 @@ export const LocationCard = ({
   });
 
   return (
-    <div className={`bg-game-card p-4 rounded-lg mb-4 ${isCurrentLocation ? 'border-2 border-game-accent' : ''}`}>
+    <div 
+      className={`bg-game-card p-4 rounded-lg mb-4 transition-all duration-300
+        ${isCurrentLocation ? 'border-2 border-game-accent animate-glow' : 'hover:scale-[1.02]'}
+        ${isHovered && !isCurrentLocation ? 'shadow-lg shadow-game-accent/20' : ''}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-bold text-white">{location.name}</h3>
         {!isCurrentLocation && (
           <Button 
             onClick={() => setShowTravelOptions(true)}
-            className="bg-game-accent hover:bg-game-accent/80 text-black"
+            className={`bg-game-accent hover:bg-game-accent/80 text-black transition-all duration-200
+              ${isHovered ? 'animate-pulse' : ''}`}
           >
             Travel
           </Button>
