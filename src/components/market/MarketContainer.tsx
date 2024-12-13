@@ -1,6 +1,7 @@
 import { GameState, Item } from "../../types/game";
 import { Inventory } from "../Inventory";
 import { WeaponsShop } from "../WeaponsShop";
+import { useEffect, useRef } from "react";
 
 interface MarketContainerProps {
   gameState: GameState;
@@ -19,18 +20,31 @@ export const MarketContainer = ({
   onSell,
   onBuyWeapon,
 }: MarketContainerProps) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const updateScrollIndicator = () => {
+      const scrollPercentage = container.scrollTop / (container.scrollHeight - container.clientHeight);
+      container.style.setProperty('--scroll-percentage', String(scrollPercentage));
+    };
+
+    container.addEventListener('scroll', updateScrollIndicator);
+    return () => container.removeEventListener('scroll', updateScrollIndicator);
+  }, []);
+
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-game-card border-t border-game-accent/20 p-4">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-xl font-bold text-white mb-4">Market</h2>
         <div 
+          ref={scrollContainerRef}
           className="max-h-[40vh] overflow-y-auto"
           style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            '&::-webkit-scrollbar': { width: '0px' },
-            '&::-webkit-scrollbar-track': { background: 'transparent' },
-            '&::-webkit-scrollbar-thumb': { background: 'transparent' }
+            msOverflowStyle: "none",
+            scrollbarWidth: "none"
           }}
         >
           <div className="relative">
