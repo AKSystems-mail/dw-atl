@@ -23,6 +23,14 @@ export const InventoryItem = ({
   bagCapacity,
   bagCurrentSize,
 }: InventoryItemProps) => {
+  const handleSellAll = () => {
+    for (let i = 0; i < owned; i++) {
+      onSell();
+    }
+  };
+
+  const isBagFull = bagCurrentSize >= bagCapacity;
+
   return (
     <div className="flex justify-between items-center">
       <div>
@@ -34,8 +42,9 @@ export const InventoryItem = ({
       <div className="flex gap-2">
         <Button
           onClick={onBuy}
-          disabled={gameState.money < currentPrice || bagCurrentSize >= bagCapacity}
+          disabled={gameState.money < currentPrice || isBagFull}
           className="bg-game-accent hover:bg-game-accent/80 text-black"
+          title={isBagFull ? "Bookbag is full" : undefined}
         >
           Buy
         </Button>
@@ -45,6 +54,13 @@ export const InventoryItem = ({
           className="bg-game-accent2 hover:bg-game-accent2/80 text-white"
         >
           Sell
+        </Button>
+        <Button
+          onClick={handleSellAll}
+          disabled={owned === 0}
+          className="bg-game-accent2 hover:bg-game-accent2/80 text-white"
+        >
+          Sell All
         </Button>
       </div>
     </div>

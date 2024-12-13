@@ -22,6 +22,10 @@ export const StatsBar = ({ gameState }: StatsBarProps) => {
             <div className="text-sm text-game-accent2">Debt</div>
             <div className="font-bold">${displayDebt}</div>
           </div>
+          <div>
+            <div className="text-sm text-game-accent">Bookbag</div>
+            <div className="font-bold">{gameState.bookBag.currentSize} / {gameState.bookBag.capacity}</div>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <div>
