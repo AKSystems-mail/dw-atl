@@ -95,9 +95,21 @@ export const TravelManager = ({
     onTravel(destinationId, currentTravelMethod);
     toast({
       title: "Arrived!",
-      description: `You arrived in the ${destinationId === "westend" ? "West End" : destinationId}!`
+      description: `You arrived in ${getLocationName(destinationId)}!`
     });
     setHasEncounteredRisk(false);
+  };
+
+  const getLocationName = (id: string) => {
+    switch(id) {
+      case "midtown": return "Midtown";
+      case "buckhead": return "Buckhead";
+      case "cobbcounty": return "Cobb County";
+      case "littlefive": return "Little Five Points";
+      case "decatur": return "Decatur";
+      case "westend": return "West End";
+      default: return id;
+    }
   };
 
   const handleEscapeAttempt = (escapeMethod: string) => {
