@@ -129,10 +129,10 @@ const Index = () => {
   const handleSettingsChange = (newSettings: Partial<GameSettingsType>) => {
     setGameState(prev => {
       const updatedSettings = { ...prev.settings, ...newSettings };
-      const difficultyConfig = difficultySettings[updatedSettings.difficulty];
       
-      // Reset game state if duration or difficulty changes
+      // Only reset game state if duration or difficulty changes
       if (newSettings.duration || newSettings.difficulty) {
+        const difficultyConfig = difficultySettings[updatedSettings.difficulty];
         return {
           money: difficultyConfig.initialMoney,
           debt: difficultyConfig.initialDebt,
@@ -154,6 +154,7 @@ const Index = () => {
         };
       }
       
+      // Just update settings for volume/sound changes
       return {
         ...prev,
         settings: updatedSettings

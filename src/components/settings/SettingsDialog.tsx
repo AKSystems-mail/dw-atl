@@ -30,12 +30,15 @@ interface SettingsDialogProps {
 export const SettingsDialog = ({ settings, onSettingsChange }: SettingsDialogProps) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingSettings, setPendingSettings] = useState<Partial<GameSettingsType> | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSettingsChange = (newSettings: Partial<GameSettingsType>) => {
-    if (newSettings.duration !== settings.duration || newSettings.difficulty !== settings.difficulty) {
+    // Only show confirmation for duration and difficulty changes
+    if (newSettings.duration !== undefined || newSettings.difficulty !== undefined) {
       setPendingSettings(newSettings);
       setShowConfirm(true);
     } else {
+      // Directly apply non-game-resetting changes like volume and sound
       onSettingsChange(newSettings);
     }
   };
@@ -46,11 +49,22 @@ export const SettingsDialog = ({ settings, onSettingsChange }: SettingsDialogPro
       setPendingSettings(null);
     }
     setShowConfirm(false);
+    // Keep the settings dialog open after confirmation
+    setIsOpen(true);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    // Reset pending settings when dialog is closed
+    if (!open) {
+      setPendingSettings(null);
+      setShowConfirm(false);
+    }
   };
 
   return (
     <>
-      <Dialog>
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
           <Button variant="ghost" size="icon">
             <Settings className="h-4 w-4" />
@@ -76,7 +90,7 @@ export const SettingsDialog = ({ settings, onSettingsChange }: SettingsDialogPro
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setShowConfirm(false)}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmChange}>Continue</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
