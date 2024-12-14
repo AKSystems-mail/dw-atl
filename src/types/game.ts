@@ -49,6 +49,7 @@ export interface GameState {
 
 export interface GameSettings {
   sound: boolean;
+  volume: number;
   duration: number;
   difficulty: 'mount_paran' | 'east_atlanta' | 'hapeville';
 }

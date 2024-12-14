@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { GameState, TravelOption } from "../../types/game";
 import { toast } from "@/components/ui/use-toast";
-import { TravelDialog } from "../TravelDialog";
-import { TravelAnimation } from "../TravelAnimation";
-import { RiskDialog } from "../RiskDialog";
-import { travelOptions, locationRisks } from "../../data/gameData";
+import { locationRisks } from "../../data/gameData";
 import { applyPenalties } from "../../utils/riskCalculations";
 
 interface TravelManagerProps {
@@ -28,6 +25,7 @@ export const TravelManager = ({
   const [rydeCooldown, setRydeCooldown] = useState(0);
   const [showTravelAnimation, setShowTravelAnimation] = useState(false);
   const [currentTravelMethod, setCurrentTravelMethod] = useState<string>("");
+  const [hasEncounteredRisk, setHasEncounteredRisk] = useState(false);
 
   const handleTravel = (option: TravelOption) => {
     if (option.id === "ryde" && rydeCooldown > 0) {
@@ -47,27 +45,32 @@ export const TravelManager = ({
       return;
     }
 
-    if (destinationId === "westend") {
-      const risk = locationRisks.westend;
+    if (!hasEncounteredRisk) {
+      if (destinationId === "westend") {
+        const risk = locationRisks.westend;
+        const roll = Math.random();
+        if (roll < risk.chance) {
+          setSelectedOption(option);
+          setShowRiskDialog(true);
+          setHasEncounteredRisk(true);
+          return;
+        }
+      }
+
+      const riskChance = typeof option.risk.chance === 'function' 
+        ? option.risk.chance(currentLocation, destinationId, gameState)
+        : option.risk.chance;
+
       const roll = Math.random();
-      if (roll < risk.chance) {
+      if (roll < riskChance) {
         setSelectedOption(option);
         setShowRiskDialog(true);
+        setHasEncounteredRisk(true);
         return;
       }
     }
 
-    const riskChance = typeof option.risk.chance === 'function' 
-      ? option.risk.chance(currentLocation, destinationId, gameState)
-      : option.risk.chance;
-
-    const roll = Math.random();
-    if (roll < riskChance) {
-      setSelectedOption(option);
-      setShowRiskDialog(true);
-    } else {
-      completeTravelWithoutIncident(option);
-    }
+    completeTravelWithoutIncident(option);
   };
 
   const completeTravelWithoutIncident = (option: TravelOption) => {
@@ -90,6 +93,11 @@ export const TravelManager = ({
   const handleAnimationComplete = () => {
     setShowTravelAnimation(false);
     onTravel(destinationId, currentTravelMethod);
+    toast({
+      title: "Arrived!",
+      description: `You arrived in the ${destinationId === "westend" ? "West End" : destinationId}!`
+    });
+    setHasEncounteredRisk(false);
   };
 
   const handleEscapeAttempt = (escapeMethod: string) => {

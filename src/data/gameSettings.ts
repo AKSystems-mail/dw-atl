@@ -2,6 +2,7 @@ import { GameSettings } from "../types/game";
 
 export const defaultSettings: GameSettings = {
   sound: true,
+  volume: 50,
   duration: 30,
   difficulty: 'east_atlanta'
 };

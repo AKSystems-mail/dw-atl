@@ -1,5 +1,6 @@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -25,6 +26,19 @@ export const GameSettings = ({ settings, onSettingsChange }: GameSettingsProps) 
           id="sound"
           checked={settings.sound}
           onCheckedChange={(checked) => onSettingsChange({ sound: checked })}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="volume" className="text-white">Volume</Label>
+        <Slider
+          id="volume"
+          min={0}
+          max={100}
+          step={1}
+          value={[settings.volume || 50]}
+          onValueChange={(value) => onSettingsChange({ volume: value[0] })}
+          className="w-full"
         />
       </div>
 
@@ -56,7 +70,7 @@ export const GameSettings = ({ settings, onSettingsChange }: GameSettingsProps) 
             <SelectValue placeholder="Select difficulty" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="mount_paran">Mount Paran (Easy)</SelectItem>
+            <SelectItem value="mount_paran">Mt. Paran (Easy)</SelectItem>
             <SelectItem value="east_atlanta">East Atlanta (Normal)</SelectItem>
             <SelectItem value="hapeville">Hapeville (Hard)</SelectItem>
           </SelectContent>
