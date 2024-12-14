@@ -130,7 +130,6 @@ const Index = () => {
     setGameState(prev => {
       const updatedSettings = { ...prev.settings, ...newSettings };
       
-      // Only reset game state if duration or difficulty changes
       if (newSettings.duration || newSettings.difficulty) {
         const difficultyConfig = difficultySettings[updatedSettings.difficulty];
         return {
@@ -154,7 +153,6 @@ const Index = () => {
         };
       }
       
-      // Just update settings for volume/sound changes
       return {
         ...prev,
         settings: updatedSettings

@@ -33,12 +33,10 @@ export const SettingsDialog = ({ settings, onSettingsChange }: SettingsDialogPro
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSettingsChange = (newSettings: Partial<GameSettingsType>) => {
-    // Only show confirmation for duration and difficulty changes
     if (newSettings.duration !== undefined || newSettings.difficulty !== undefined) {
       setPendingSettings(newSettings);
       setShowConfirm(true);
     } else {
-      // Directly apply non-game-resetting changes like volume and sound
       onSettingsChange(newSettings);
     }
   };
@@ -49,22 +47,12 @@ export const SettingsDialog = ({ settings, onSettingsChange }: SettingsDialogPro
       setPendingSettings(null);
     }
     setShowConfirm(false);
-    // Keep the settings dialog open after confirmation
-    setIsOpen(true);
-  };
-
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
-    // Reset pending settings when dialog is closed
-    if (!open) {
-      setPendingSettings(null);
-      setShowConfirm(false);
-    }
+    setIsOpen(false);
   };
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button variant="ghost" size="icon">
             <Settings className="h-4 w-4" />
