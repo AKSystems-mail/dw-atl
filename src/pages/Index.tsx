@@ -120,10 +120,43 @@ const Index = () => {
           id: weapon.id,
           name: weapon.name,
           winChance: weapon.winChance,
-          cooldown: 0
+          cooldown: 0,
+          usesLeft: weapon.maxUses
         }
       }));
     }
+  };
+
+  const handleWeaponUse = () => {
+    setGameState(prev => {
+      if (prev.weapon.id === "fists" || !prev.weapon.usesLeft) {
+        return prev;
+      }
+
+      const newUsesLeft = (prev.weapon.usesLeft || 0) - 1;
+
+      // If weapon is broken, revert to fists
+      if (newUsesLeft <= 0) {
+        return {
+          ...prev,
+          weapon: {
+            id: "fists",
+            name: "Fists",
+            winChance: 0.45,
+            cooldown: 0
+          }
+        };
+      }
+
+      // Otherwise just decrement uses
+      return {
+        ...prev,
+        weapon: {
+          ...prev.weapon,
+          usesLeft: newUsesLeft
+        }
+      };
+    });
   };
 
   const handleSettingsChange = (newSettings: Partial<GameSettingsType>) => {
@@ -175,6 +208,7 @@ const Index = () => {
       onBuy={handleBuy}
       onSell={handleSell}
       onBuyWeapon={handleBuyWeapon}
+      onWeaponUse={handleWeaponUse}
     />
   );
 };

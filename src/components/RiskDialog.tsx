@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { GameState, TravelOption } from "../types/game";
+import { toast } from "@/components/ui/use-toast";
 
 interface RiskDialogProps {
   open: boolean;
@@ -21,6 +22,19 @@ export const RiskDialog = ({
     ? selectedOption?.risk.type(gameState.currentLocation)
     : selectedOption?.risk.type;
 
+  const handleFight = () => {
+    if (gameState.weapon.id !== "fists" && gameState.weapon.usesLeft !== undefined) {
+      // If this is the last use, revert to fists after the fight
+      if (gameState.weapon.usesLeft <= 1) {
+        toast({
+          title: "Weapon Broken!",
+          description: `Your ${gameState.weapon.name} has broken after this fight!`,
+        });
+      }
+    }
+    onEscapeAttempt('fight');
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -38,12 +52,14 @@ export const RiskDialog = ({
           )}
           {selectedOption?.risk.escape?.fight && (
             <Button 
-              onClick={() => onEscapeAttempt('fight')} 
+              onClick={handleFight} 
               variant="outline"
               disabled={gameState.weapon.cooldown > 0}
             >
               Fight with {gameState.weapon.name} ({(gameState.weapon.winChance * 100).toFixed(0)}% escape chance)
               {gameState.weapon.cooldown > 0 && ` (${gameState.weapon.cooldown}m cooldown)`}
+              {gameState.weapon.id !== "fists" && gameState.weapon.usesLeft !== undefined && 
+                ` (${gameState.weapon.usesLeft} uses left)`}
             </Button>
           )}
           {selectedOption?.risk.escape?.bribe && (
