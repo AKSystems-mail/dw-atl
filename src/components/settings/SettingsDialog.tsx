@@ -33,11 +33,16 @@ export const SettingsDialog = ({ settings, onSettingsChange }: SettingsDialogPro
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSettingsChange = (newSettings: Partial<GameSettingsType>) => {
-    if (newSettings.duration !== undefined || newSettings.difficulty !== undefined) {
+    // Only show confirmation for duration changes
+    if (newSettings.duration !== undefined) {
       setPendingSettings(newSettings);
       setShowConfirm(true);
     } else {
       onSettingsChange(newSettings);
+      // Close dialog only for non-duration changes
+      if (!newSettings.duration) {
+        setIsOpen(false);
+      }
     }
   };
 
@@ -62,7 +67,7 @@ export const SettingsDialog = ({ settings, onSettingsChange }: SettingsDialogPro
           <DialogHeader>
             <DialogTitle>Game Settings</DialogTitle>
             <DialogDescription>
-              Adjust your game settings. Changing duration or difficulty will start a new game.
+              Adjust your game settings. Changing duration will start a new game.
             </DialogDescription>
           </DialogHeader>
           <GameSettings settings={settings} onSettingsChange={handleSettingsChange} />
@@ -74,7 +79,7 @@ export const SettingsDialog = ({ settings, onSettingsChange }: SettingsDialogPro
           <AlertDialogHeader>
             <AlertDialogTitle>Start New Game?</AlertDialogTitle>
             <AlertDialogDescription>
-              Changing game duration or difficulty will start a new game. Your current progress will be lost.
+              Changing game duration will start a new game. Your current progress will be lost.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

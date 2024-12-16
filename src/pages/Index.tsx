@@ -130,7 +130,8 @@ const Index = () => {
     setGameState(prev => {
       const updatedSettings = { ...prev.settings, ...newSettings };
       
-      if (newSettings.duration || newSettings.difficulty) {
+      // Only reset game state if duration is changed
+      if (newSettings.duration) {
         const difficultyConfig = difficultySettings[updatedSettings.difficulty];
         return {
           money: difficultyConfig.initialMoney,
