@@ -25,6 +25,7 @@ export interface Weapon {
   name: string;
   price: number;
   winChance: number;
+  maxUses?: number;
 }
 
 export interface GameState {
@@ -43,6 +44,7 @@ export interface GameState {
     name: string;
     winChance: number;
     cooldown: number;
+    usesLeft?: number;
   };
   settings: GameSettings;
 }

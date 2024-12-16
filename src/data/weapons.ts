@@ -11,18 +11,21 @@ export const weapons: Weapon[] = [
     id: "blicky",
     name: "Blicky",
     price: 300,
-    winChance: 0.52
+    winChance: 0.52,
+    maxUses: 10
   },
   {
     id: "strap",
     name: "Strap",
     price: 550,
-    winChance: 0.63
+    winChance: 0.63,
+    maxUses: 10
   },
   {
     id: "draco",
     name: "Draco",
     price: 3000,
-    winChance: 0.77
+    winChance: 0.77,
+    maxUses: 10
   }
 ];
