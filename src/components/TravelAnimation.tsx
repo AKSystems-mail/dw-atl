@@ -36,7 +36,7 @@ export const TravelAnimation = ({ travelMethod, onComplete }: TravelAnimationPro
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center transition-opacity duration-500">
       <div className="animate-bounce text-game-accent">
         {getIcon()}
       </div>
