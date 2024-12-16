@@ -14,6 +14,7 @@ interface GameLayoutProps {
   onBuy: (itemId: string) => void;
   onSell: (itemId: string) => void;
   onBuyWeapon: (weapon: Weapon) => void;
+  onWeaponUse: () => void;
 }
 
 export const GameLayout = ({
@@ -25,6 +26,7 @@ export const GameLayout = ({
   onBuy,
   onSell,
   onBuyWeapon,
+  onWeaponUse,
 }: GameLayoutProps) => {
   return (
     <div className="min-h-screen bg-game-background pb-[50vh]">
@@ -46,6 +48,7 @@ export const GameLayout = ({
               onBuy={onBuy}
               onSell={onSell}
               onBuyWeapon={onBuyWeapon}
+              onWeaponUse={onWeaponUse}
             />
           )}
         </div>

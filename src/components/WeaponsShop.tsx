@@ -6,9 +6,10 @@ import { toast } from "@/components/ui/use-toast";
 interface WeaponsShopProps {
   gameState: GameState;
   onBuyWeapon: (weapon: Weapon) => void;
+  onWeaponUse: () => void;
 }
 
-export const WeaponsShop = ({ gameState, onBuyWeapon }: WeaponsShopProps) => {
+export const WeaponsShop = ({ gameState, onBuyWeapon, onWeaponUse }: WeaponsShopProps) => {
   if (gameState.currentLocation !== "westend") {
     return null;
   }

@@ -1,7 +1,6 @@
 import { GameState, Item } from "../../types/game";
-import { Inventory } from "../Inventory";
 import { WeaponsShop } from "../WeaponsShop";
-import { useEffect, useRef } from "react";
+import { Weapon } from "../../types/game";
 
 interface MarketContainerProps {
   gameState: GameState;
@@ -9,7 +8,8 @@ interface MarketContainerProps {
   items: Item[];
   onBuy: (itemId: string) => void;
   onSell: (itemId: string) => void;
-  onBuyWeapon: (weapon: any) => void;
+  onBuyWeapon: (weapon: Weapon) => void;
+  onWeaponUse: () => void;
 }
 
 export const MarketContainer = ({
@@ -19,58 +19,30 @@ export const MarketContainer = ({
   onBuy,
   onSell,
   onBuyWeapon,
+  onWeaponUse,
 }: MarketContainerProps) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const updateScrollIndicator = () => {
-      const scrollPercentage = container.scrollTop / (container.scrollHeight - container.clientHeight);
-      container.style.setProperty('--scroll-percentage', String(scrollPercentage));
-    };
-
-    container.addEventListener('scroll', updateScrollIndicator);
-    return () => container.removeEventListener('scroll', updateScrollIndicator);
-  }, []);
-
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-game-card border-t border-game-accent/20 p-4">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-xl font-bold text-white mb-4">Market</h2>
-        <div 
-          ref={scrollContainerRef}
-          className="max-h-[40vh] overflow-y-auto"
-          style={{
-            msOverflowStyle: "none",
-            scrollbarWidth: "none"
-          }}
-        >
-          <div className="relative">
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-game-accent/20">
-              <div 
-                className="h-full bg-game-accent"
-                style={{
-                  width: '100%',
-                  transform: 'scaleX(var(--scroll-percentage, 0))',
-                  transformOrigin: 'left',
-                  transition: 'transform 0.1s ease-out'
-                }}
-              />
+    <div>
+      <WeaponsShop 
+        gameState={gameState} 
+        onBuyWeapon={onBuyWeapon}
+        onWeaponUse={onWeaponUse}
+      />
+      <div className="mt-4">
+        <h3 className="text-lg font-bold text-white mb-4">Market Items</h3>
+        <div className="space-y-2">
+          {items.map(item => (
+            <div key={item.id} className="flex justify-between items-center">
+              <div className="text-white">{item.name}</div>
+              <div className="text-sm text-game-accent">Price: ${currentLocationPrices[item.id]}</div>
+              <button
+                onClick={() => onBuy(item.id)}
+                className="bg-game-accent hover:bg-game-accent/80 text-black px-4 py-2 rounded"
+              >
+                Buy
+              </button>
             </div>
-            <Inventory
-              gameState={gameState}
-              items={items}
-              locationPrices={currentLocationPrices}
-              onBuy={onBuy}
-              onSell={onSell}
-            />
-            <WeaponsShop
-              gameState={gameState}
-              onBuyWeapon={onBuyWeapon}
-            />
-          </div>
+          ))}
         </div>
       </div>
     </div>
