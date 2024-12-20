@@ -1,6 +1,7 @@
 import { GameState, Item } from "../../types/game";
 import { WeaponsShop } from "../WeaponsShop";
 import { Weapon } from "../../types/game";
+import { Inventory } from "../Inventory";
 
 interface MarketContainerProps {
   gameState: GameState;
@@ -30,20 +31,13 @@ export const MarketContainer = ({
       />
       <div className="mt-4">
         <h3 className="text-lg font-bold text-white mb-4">Market Items</h3>
-        <div className="space-y-2">
-          {items.map(item => (
-            <div key={item.id} className="flex justify-between items-center">
-              <div className="text-white">{item.name}</div>
-              <div className="text-sm text-game-accent">Price: ${currentLocationPrices[item.id]}</div>
-              <button
-                onClick={() => onBuy(item.id)}
-                className="bg-game-accent hover:bg-game-accent/80 text-black px-4 py-2 rounded"
-              >
-                Buy
-              </button>
-            </div>
-          ))}
-        </div>
+        <Inventory
+          gameState={gameState}
+          items={items}
+          locationPrices={currentLocationPrices}
+          onBuy={onBuy}
+          onSell={onSell}
+        />
       </div>
     </div>
   );
