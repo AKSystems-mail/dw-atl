@@ -29,9 +29,9 @@ export const TravelDialog = ({
 }: TravelDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="bg-game-card border-game-accent border-2">
         <DialogHeader>
-          <DialogTitle>Choose Travel Option</DialogTitle>
+          <DialogTitle className="text-white text-xl font-bold">Choose Travel Option</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           {travelOptions.map((option) => {
@@ -42,14 +42,14 @@ export const TravelDialog = ({
               <Button
                 key={option.id}
                 onClick={() => onTravel(option)}
-                className="w-full justify-between"
+                className="w-full justify-between bg-game-background hover:bg-game-accent hover:text-game-background text-white border border-game-accent/20 transition-all duration-300"
                 variant="outline"
                 disabled={isRydeDisabled}
               >
                 <span>{option.name}</span>
                 <div className="flex gap-2 items-center">
-                  <span>${price}</span>
-                  {isRydeDisabled && <span>({rydeCooldown}s)</span>}
+                  <span className="text-game-accent">${price}</span>
+                  {isRydeDisabled && <span className="text-game-accent2">({rydeCooldown}s)</span>}
                 </div>
               </Button>
             );
