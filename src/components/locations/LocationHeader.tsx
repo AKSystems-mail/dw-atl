@@ -1,4 +1,5 @@
 import { Location } from "../../types/game";
+import { motion } from "framer-motion";
 
 interface LocationHeaderProps {
   location: Location;
@@ -9,18 +10,29 @@ export const LocationHeader = ({ location, isCurrentLocation }: LocationHeaderPr
   return (
     <div className="flex justify-between items-center mb-2">
       <div className="space-y-1">
-        <h3 className="text-lg font-bold text-white group-hover:text-game-accent transition-colors">
+        <motion.h3 
+          className="text-lg font-bold text-white group-hover:text-game-accent transition-colors"
+          layout
+        >
           {location.name}
-        </h3>
-        <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
+        </motion.h3>
+        <motion.p 
+          className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors"
+          layout
+        >
           {location.description}
-        </p>
+        </motion.p>
       </div>
       {isCurrentLocation && (
-        <div className="flex items-center gap-2">
+        <motion.div 
+          className="flex items-center gap-2"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
           <span className="inline-block w-2 h-2 bg-game-accent rounded-full animate-pulse" />
           <span className="text-xs text-game-accent">Current</span>
-        </div>
+        </motion.div>
       )}
     </div>
   );
