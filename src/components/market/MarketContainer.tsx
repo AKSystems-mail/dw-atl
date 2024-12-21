@@ -10,6 +10,7 @@ interface MarketContainerProps {
   onBuy: (itemId: string) => void;
   onSell: (itemId: string) => void;
   onBuyWeapon: (weapon: Weapon) => void;
+  onWeaponUse: () => void;
 }
 
 export const MarketContainer = ({
@@ -19,6 +20,7 @@ export const MarketContainer = ({
   onBuy,
   onSell,
   onBuyWeapon,
+  onWeaponUse,
 }: MarketContainerProps) => {
   if (!items || !currentLocationPrices) {
     return <div className="text-white">Loading market data...</div>;
@@ -27,9 +29,9 @@ export const MarketContainer = ({
   return (
     <div className="p-4 bg-game-primary rounded-lg">
       <WeaponsShop
-        money={gameState.money}
+        gameState={gameState}
         onBuyWeapon={onBuyWeapon}
-        currentWeapon={gameState.weapon}
+        onWeaponUse={onWeaponUse}
       />
       <div className="mt-4">
         <h3 className="text-lg font-bold text-white mb-4">Market Items</h3>

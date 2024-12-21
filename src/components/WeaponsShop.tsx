@@ -10,7 +10,7 @@ interface WeaponsShopProps {
 }
 
 export const WeaponsShop = ({ gameState, onBuyWeapon, onWeaponUse }: WeaponsShopProps) => {
-  if (gameState.currentLocation !== "westend") {
+  if (!gameState || gameState.currentLocation !== "westend") {
     return null;
   }
 
