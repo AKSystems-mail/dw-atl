@@ -1,8 +1,5 @@
 import { GameState, Item } from "../types/game";
-import { bookBags } from "../data/gameData";
-import { InventoryItem } from "./market/InventoryItem";
-import { BookBagUpgrade } from "./inventory/BookBagUpgrade";
-import { InventoryHeader } from "./inventory/InventoryHeader";
+import { Button } from "./ui/button";
 
 interface InventoryProps {
   gameState: GameState;
@@ -12,42 +9,66 @@ interface InventoryProps {
   onSell: (itemId: string) => void;
 }
 
-export const Inventory = ({ gameState, items, locationPrices, onBuy, onSell }: InventoryProps) => {
-  const canBuyBookBag = gameState.currentLocation === "littlefive";
-  const currentBagIndex = bookBags.findIndex(bag => bag.capacity === gameState.bookBag.capacity);
-  const nextBag = bookBags[currentBagIndex + 1];
-
-  const availableItems = items.filter(item => locationPrices[item.id] !== undefined);
+export const Inventory = ({
+  gameState,
+  items,
+  locationPrices,
+  onBuy,
+  onSell,
+}: InventoryProps) => {
+  const handleSellAll = (itemId: string) => {
+    const quantity = gameState.inventory[itemId] || 0;
+    for (let i = 0; i < quantity; i++) {
+      onSell(itemId);
+    }
+  };
 
   return (
-    <div className="bg-game-card p-4 rounded-lg">
-      <InventoryHeader
-        currentSize={gameState.bookBag.currentSize}
-        capacity={gameState.bookBag.capacity}
-      />
-
-      <BookBagUpgrade
-        gameState={gameState}
-        nextBag={nextBag}
-        canBuyBookBag={canBuyBookBag}
-      />
-
-      <div className="space-y-4">
-        {availableItems.map((item) => (
-          <InventoryItem
+    <div className="space-y-2">
+      {items.map((item) => {
+        const quantity = gameState.inventory[item.id] || 0;
+        return (
+          <div
             key={item.id}
-            itemId={item.id}
-            itemName={item.name}
-            owned={gameState.inventory[item.id] || 0}
-            currentPrice={locationPrices[item.id]}
-            onBuy={() => onBuy(item.id)}
-            onSell={() => onSell(item.id)}
-            gameState={gameState}
-            bagCapacity={gameState.bookBag.capacity}
-            bagCurrentSize={gameState.bookBag.currentSize}
-          />
-        ))}
-      </div>
+            className="flex justify-between items-center bg-game-secondary/20 p-2 rounded"
+          >
+            <div className="flex-1">
+              <div className="text-white">{item.name}</div>
+              <div className="text-sm text-game-accent">
+                Price: ${locationPrices[item.id]}
+              </div>
+              <div className="text-sm text-gray-400">Owned: {quantity}</div>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => onBuy(item.id)}
+                variant="secondary"
+                className="bg-game-accent hover:bg-game-accent/80 text-black"
+              >
+                Buy
+              </Button>
+              {quantity > 0 && (
+                <>
+                  <Button
+                    onClick={() => onSell(item.id)}
+                    variant="destructive"
+                    className="bg-red-500 hover:bg-red-600"
+                  >
+                    Sell
+                  </Button>
+                  <Button
+                    onClick={() => handleSellAll(item.id)}
+                    variant="destructive"
+                    className="bg-red-700 hover:bg-red-800"
+                  >
+                    Sell All
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

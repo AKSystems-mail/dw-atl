@@ -5,29 +5,31 @@ import { Inventory } from "../Inventory";
 
 interface MarketContainerProps {
   gameState: GameState;
-  currentLocationPrices: Record<string, number>;
   items: Item[];
+  currentLocationPrices: Record<string, number>;
   onBuy: (itemId: string) => void;
   onSell: (itemId: string) => void;
   onBuyWeapon: (weapon: Weapon) => void;
-  onWeaponUse: () => void;
 }
 
 export const MarketContainer = ({
   gameState,
-  currentLocationPrices,
   items,
+  currentLocationPrices,
   onBuy,
   onSell,
   onBuyWeapon,
-  onWeaponUse,
 }: MarketContainerProps) => {
+  if (!items || !currentLocationPrices) {
+    return <div className="text-white">Loading market data...</div>;
+  }
+
   return (
-    <div>
-      <WeaponsShop 
-        gameState={gameState} 
+    <div className="p-4 bg-game-primary rounded-lg">
+      <WeaponsShop
+        money={gameState.money}
         onBuyWeapon={onBuyWeapon}
-        onWeaponUse={onWeaponUse}
+        currentWeapon={gameState.weapon}
       />
       <div className="mt-4">
         <h3 className="text-lg font-bold text-white mb-4">Market Items</h3>
