@@ -7,6 +7,8 @@ interface LocationsContainerProps {
   onTravel: (locationId: string) => void;
   gameState: GameState;
   setGameState: (state: GameState | ((prev: GameState) => GameState)) => void;
+  onBuy: (itemId: string) => void;
+  onSell: (itemId: string) => void;
 }
 
 export const LocationsContainer = ({
@@ -15,6 +17,8 @@ export const LocationsContainer = ({
   onTravel,
   gameState,
   setGameState,
+  onBuy,
+  onSell,
 }: LocationsContainerProps) => {
   return (
     <div className="space-y-4">
@@ -27,6 +31,8 @@ export const LocationsContainer = ({
           onTravel={onTravel}
           gameState={gameState}
           setGameState={setGameState}
+          onBuy={onBuy}
+          onSell={onSell}
         />
       ))}
     </div>

@@ -39,6 +39,8 @@ export const GameLayout = ({
             onTravel={onTravel}
             gameState={gameState}
             setGameState={setGameState}
+            onBuy={onBuy}
+            onSell={onSell}
           />
           {currentLocation && (
             <MarketContainer

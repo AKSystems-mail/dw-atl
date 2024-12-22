@@ -14,6 +14,8 @@ interface LocationCardProps {
   onTravel: (locationId: string, travelMethod: string) => void;
   gameState: GameState;
   setGameState: (state: GameState | ((prev: GameState) => GameState)) => void;
+  onBuy: (itemId: string) => void;
+  onSell: (itemId: string) => void;
 }
 
 export const LocationCard = ({ 
@@ -21,7 +23,9 @@ export const LocationCard = ({
   currentLocation, 
   onTravel, 
   gameState, 
-  setGameState 
+  setGameState,
+  onBuy,
+  onSell
 }: LocationCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const isCurrentLocation = location.id === currentLocation;
@@ -69,15 +73,6 @@ export const LocationCard = ({
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleLocationClick}
     >
-      {!isCurrentLocation && (
-        <motion.div 
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-game-accent/5 to-transparent"
-          initial={{ x: "-200%" }}
-          animate={{ x: isHovered ? "200%" : "-200%" }}
-          transition={{ duration: 1, ease: "easeInOut" }}
-        />
-      )}
-      
       <LocationHeader location={location} isCurrentLocation={isCurrentLocation} />
       
       <AnimatePresence>
@@ -88,7 +83,13 @@ export const LocationCard = ({
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <LocationPrices location={location} isCurrentLocation={isCurrentLocation} />
+            <LocationPrices 
+              location={location} 
+              isCurrentLocation={isCurrentLocation}
+              gameState={gameState}
+              onBuy={onBuy}
+              onSell={onSell}
+            />
           </motion.div>
         )}
       </AnimatePresence>
