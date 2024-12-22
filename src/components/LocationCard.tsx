@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Location, GameState } from "../types/game";
 import { LocationPrices } from "./LocationPrices";
 import { TravelDialog } from "./TravelDialog";
@@ -14,6 +14,8 @@ interface LocationCardProps {
   onTravel: (locationId: string, travelMethod: string) => void;
   gameState: GameState;
   setGameState: (state: GameState | ((prev: GameState) => GameState)) => void;
+  onBuy: (itemId: string) => void;
+  onSell: (itemId: string) => void;
 }
 
 export const LocationCard = ({ 
@@ -21,7 +23,9 @@ export const LocationCard = ({
   currentLocation, 
   onTravel, 
   gameState, 
-  setGameState 
+  setGameState,
+  onBuy,
+  onSell
 }: LocationCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const isCurrentLocation = location.id === currentLocation;
@@ -67,7 +71,13 @@ export const LocationCard = ({
       </div>
       <p className="text-sm text-gray-400">{location.description}</p>
       
-      <LocationPrices location={location} isCurrentLocation={isCurrentLocation} />
+      <LocationPrices 
+        location={location} 
+        isCurrentLocation={isCurrentLocation}
+        gameState={gameState}
+        onBuy={onBuy}
+        onSell={onSell}
+      />
 
       {showDebtRepayment && (
         <DebtRepayment gameState={gameState} setGameState={setGameState} />

@@ -75,22 +75,22 @@ export const InventoryItem = ({
         >
           Buy
         </Button>
-        <Button
-          onClick={onSell}
-          disabled={owned === 0}
-          className={`bg-game-accent2 hover:bg-game-accent2/80 text-white transition-all duration-200
-            ${owned > 0 ? 'hover:scale-105' : 'opacity-50'}`}
-        >
-          Sell
-        </Button>
-        <Button
-          onClick={handleSellAll}
-          disabled={owned === 0}
-          className={`bg-game-accent2 hover:bg-game-accent2/80 text-white transition-all duration-200
-            ${owned > 0 ? 'hover:scale-105 animate-glow' : 'opacity-50'}`}
-        >
-          Sell All
-        </Button>
+        {owned > 0 && (
+          <>
+            <Button
+              onClick={onSell}
+              className="bg-red-500 hover:bg-red-600 text-white transition-all duration-200 hover:scale-105"
+            >
+              Sell
+            </Button>
+            <Button
+              onClick={handleSellAll}
+              className="bg-red-800 hover:bg-red-900 text-white transition-all duration-200 hover:scale-105"
+            >
+              Sell All
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );
