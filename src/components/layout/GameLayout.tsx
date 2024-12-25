@@ -1,9 +1,11 @@
 import { StatsBar } from "../StatsBar";
-import { LocationsContainer } from "../locations/LocationsContainer";
 import { MarketContainer } from "../market/MarketContainer";
 import { GameState, Location } from "../../types/game";
 import { Weapon } from "../../types/game";
 import { items } from "../../data/items";
+import { AtlantaMap } from "../map/AtlantaMap";
+import { LocationCard } from "../locations/LocationCard";
+import { useState } from "react";
 
 interface GameLayoutProps {
   gameState: GameState;
@@ -28,20 +30,44 @@ export const GameLayout = ({
   onBuyWeapon,
   onWeaponUse,
 }: GameLayoutProps) => {
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+
+  const handleLocationSelect = (locationId: string) => {
+    setSelectedLocation(locationId);
+    if (locationId !== gameState.currentLocation) {
+      // Show travel dialog through LocationCard
+      const location = locations.find(loc => loc.id === locationId);
+      if (location) {
+        setSelectedLocation(locationId);
+      }
+    }
+  };
+
+  const selectedLocationData = locations.find(loc => loc.id === selectedLocation);
+
   return (
     <div className="min-h-screen bg-game-background pb-[50vh]">
       <StatsBar gameState={gameState} />
       <div className="p-4 pt-24">
         <div className="space-y-4">
-          <LocationsContainer
+          <AtlantaMap
             locations={locations}
             currentLocation={gameState.currentLocation}
-            onTravel={onTravel}
-            gameState={gameState}
-            setGameState={setGameState}
-            onBuy={onBuy}
-            onSell={onSell}
+            onLocationSelect={handleLocationSelect}
           />
+          
+          {selectedLocationData && (
+            <LocationCard
+              location={selectedLocationData}
+              currentLocation={gameState.currentLocation}
+              onTravel={onTravel}
+              gameState={gameState}
+              setGameState={setGameState}
+              onBuy={onBuy}
+              onSell={onSell}
+            />
+          )}
+
           {currentLocation && (
             <MarketContainer
               gameState={gameState}
