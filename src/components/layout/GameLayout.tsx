@@ -12,7 +12,7 @@ interface GameLayoutProps {
   setGameState: (state: GameState | ((prev: GameState) => GameState)) => void;
   locations: Location[];
   currentLocation: Location | undefined;
-  onTravel: (locationId: string) => void;
+  onTravel: (locationId: string, travelMethod: string) => void;
   onBuy: (itemId: string) => void;
   onSell: (itemId: string) => void;
   onBuyWeapon: (weapon: Weapon) => void;
@@ -34,13 +34,6 @@ export const GameLayout = ({
 
   const handleLocationSelect = (locationId: string) => {
     setSelectedLocation(locationId);
-    if (locationId !== gameState.currentLocation) {
-      // Show travel dialog through LocationCard
-      const location = locations.find(loc => loc.id === locationId);
-      if (location) {
-        setSelectedLocation(locationId);
-      }
-    }
   };
 
   const selectedLocationData = locations.find(loc => loc.id === selectedLocation);
@@ -54,6 +47,9 @@ export const GameLayout = ({
             locations={locations}
             currentLocation={gameState.currentLocation}
             onLocationSelect={handleLocationSelect}
+            onTravel={onTravel}
+            gameState={gameState}
+            setGameState={setGameState}
           />
           
           {selectedLocationData && (
